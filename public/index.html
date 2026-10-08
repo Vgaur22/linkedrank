@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LinkedRank — Weekly Vanity & Tech Talent Arena</title>
+  <title>LinkedRank — Weekly Spotlight Board</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -48,7 +48,7 @@
             Weekly Spotlight Board
           </h1>
           <p class="text-slate-400 text-sm max-w-lg">
-            Compete for the top spot. Highlighting founders, engineers, and builders. Top 3 claim permanent placement in the Sunday Hall of Fame.
+            Compete for top visibility. Highlighting engineers, leaders, creators, and founders. Top 3 claim permanent placement in the Sunday Hall of Fame.
           </p>
         </div>
 
@@ -72,20 +72,28 @@
       </div>
     </div>
 
-    <!-- Filter Buttons (Recruiter / Role View) -->
+    <!-- Filter Buttons (Role View) -->
     <div class="flex flex-wrap items-center gap-2 mb-6 border-b border-slate-800/80 pb-4">
       <button onclick="setFilter('all')" id="filter-all" class="px-4 py-1.5 rounded-full text-xs font-semibold bg-blue-600 text-white transition shadow-sm">
         All Leaders
       </button>
-      <button onclick="setFilter('open_to_work')" id="filter-open" class="px-4 py-1.5 rounded-full text-xs font-semibold bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition flex items-center gap-1.5">
-        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+      <button onclick="setFilter('open_to_work')" id="filter-open_to_work" class="px-4 py-1.5 rounded-full text-xs font-semibold bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition">
         Open to Work
       </button>
-      <button onclick="setFilter('freelance')" id="filter-freelance" class="px-4 py-1.5 rounded-full text-xs font-semibold bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition">
-        Freelancers & Agencies
+      <button onclick="setFilter('student_working')" id="filter-student_working" class="px-4 py-1.5 rounded-full text-xs font-semibold bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition">
+        Student / Working
+      </button>
+      <button onclick="setFilter('tech')" id="filter-tech" class="px-4 py-1.5 rounded-full text-xs font-semibold bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition">
+        Engineering & Tech
+      </button>
+      <button onclick="setFilter('manager')" id="filter-manager" class="px-4 py-1.5 rounded-full text-xs font-semibold bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition">
+        Leader / Manager
+      </button>
+      <button onclick="setFilter('creator')" id="filter-creator" class="px-4 py-1.5 rounded-full text-xs font-semibold bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition">
+        Creator / Builder
       </button>
       <button onclick="setFilter('founder')" id="filter-founder" class="px-4 py-1.5 rounded-full text-xs font-semibold bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition">
-        Founders
+        Founder
       </button>
     </div>
 
@@ -111,12 +119,12 @@
       <form id="bid-form" onsubmit="handleFormSubmit(event)" class="space-y-4">
         <div>
           <label class="block text-xs font-medium text-slate-400 mb-1">Full Name</label>
-          <input required id="bid-name" type="text" placeholder="e.g. Vishvapriya Gaur" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-white text-sm focus:border-blue-500 focus:outline-none" />
+          <input required id="bid-name" type="text" placeholder="e.g. Vishvaketan Gaur" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-white text-sm focus:border-blue-500 focus:outline-none" />
         </div>
 
         <div>
           <label class="block text-xs font-medium text-slate-400 mb-1">Headline / Role</label>
-          <input required id="bid-headline" type="text" placeholder="e.g. Full-Stack Dev | Masters in Germany" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-white text-sm focus:border-blue-500 focus:outline-none" />
+          <input required id="bid-headline" type="text" placeholder="e.g. Full-Stack Developer | Data Engineer" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-white text-sm focus:border-blue-500 focus:outline-none" />
         </div>
 
         <div>
@@ -128,9 +136,12 @@
           <div>
             <label class="block text-xs font-medium text-slate-400 mb-1">Status / Badge</label>
             <select id="bid-badge" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white text-xs focus:border-blue-500 focus:outline-none">
-              <option value="open_to_work">🟢 Open to Work</option>
-              <option value="freelance">💼 Freelancer</option>
-              <option value="founder">🚀 Founder</option>
+              <option value="open_to_work">Open to Work</option>
+              <option value="student_working">Student / Working</option>
+              <option value="tech">Engineering & Tech</option>
+              <option value="manager">Leader / Manager</option>
+              <option value="creator">Creator / Builder</option>
+              <option value="founder">Founder</option>
             </select>
           </div>
           <div>
@@ -179,17 +190,16 @@
     // Filter Switcher
     function setFilter(filter) {
       currentFilter = filter;
-      const filters = ['all', 'open_to_work', 'freelance', 'founder'];
+      const filters = ['all', 'open_to_work', 'student_working', 'tech', 'manager', 'creator', 'founder'];
       
       filters.forEach(f => {
-        const btnId = f === 'open_to_work' ? 'filter-open' : `filter-${f}`;
-        const el = document.getElementById(btnId);
+        const el = document.getElementById(`filter-${f}`);
         if (!el) return;
 
         if (f === filter) {
-          el.className = "px-4 py-1.5 rounded-full text-xs font-semibold bg-blue-600 text-white transition shadow-sm flex items-center gap-1.5";
+          el.className = "px-4 py-1.5 rounded-full text-xs font-semibold bg-blue-600 text-white transition shadow-sm";
         } else {
-          el.className = "px-4 py-1.5 rounded-full text-xs font-semibold bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition flex items-center gap-1.5";
+          el.className = "px-4 py-1.5 rounded-full text-xs font-semibold bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition";
         }
       });
 
@@ -204,7 +214,7 @@
       if (!filtered.length) {
         container.innerHTML = `
           <div class="rounded-2xl border border-slate-800/80 bg-slate-950/40 p-12 text-center">
-            <p class="text-slate-400 text-sm mb-3">No bids placed in this category yet.</p>
+            <p class="text-slate-400 text-sm mb-3">No profiles found under this category.</p>
             <button onclick="openModal()" class="text-blue-400 hover:underline text-xs font-semibold">
               Be the first to claim this spot &rarr;
             </button>
@@ -218,14 +228,27 @@
         const rankColor = idx === 0 ? 'text-amber-400' : idx === 1 ? 'text-slate-300' : idx === 2 ? 'text-amber-600' : 'text-slate-500';
         
         let badgeHtml = '';
-        if (b.badge_type === 'open_to_work') {
-          badgeHtml = `<span class="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full bg-emerald-950/80 text-emerald-400 border border-emerald-800/60 font-semibold">
-            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> Open to Work
-          </span>`;
-        } else if (b.badge_type === 'freelance') {
-          badgeHtml = `<span class="text-[11px] px-2 py-0.5 rounded-full bg-amber-950/80 text-amber-300 border border-amber-800/60 font-semibold">💼 Freelancer</span>`;
-        } else {
-          badgeHtml = `<span class="text-[11px] px-2 py-0.5 rounded-full bg-purple-950/80 text-purple-300 border border-purple-800/60 font-semibold">🚀 Founder</span>`;
+        switch (b.badge_type) {
+          case 'open_to_work':
+            badgeHtml = `<span class="text-[11px] px-2 py-0.5 rounded-full bg-emerald-950/80 text-emerald-400 border border-emerald-800/60 font-semibold">Open to Work</span>`;
+            break;
+          case 'student_working':
+            badgeHtml = `<span class="text-[11px] px-2 py-0.5 rounded-full bg-cyan-950/80 text-cyan-300 border border-cyan-800/60 font-semibold">Student / Working</span>`;
+            break;
+          case 'tech':
+            badgeHtml = `<span class="text-[11px] px-2 py-0.5 rounded-full bg-blue-950/80 text-blue-300 border border-blue-800/60 font-semibold">Engineering & Tech</span>`;
+            break;
+          case 'manager':
+            badgeHtml = `<span class="text-[11px] px-2 py-0.5 rounded-full bg-indigo-950/80 text-indigo-300 border border-indigo-800/60 font-semibold">Leader / Manager</span>`;
+            break;
+          case 'creator':
+            badgeHtml = `<span class="text-[11px] px-2 py-0.5 rounded-full bg-amber-950/80 text-amber-300 border border-amber-800/60 font-semibold">Creator / Builder</span>`;
+            break;
+          case 'founder':
+            badgeHtml = `<span class="text-[11px] px-2 py-0.5 rounded-full bg-purple-950/80 text-purple-300 border border-purple-800/60 font-semibold">Founder</span>`;
+            break;
+          default:
+            badgeHtml = `<span class="text-[11px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 font-semibold">Member</span>`;
         }
 
         const skillsHtml = b.skills ? `
