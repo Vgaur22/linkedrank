@@ -8,7 +8,7 @@ const app = express();
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 const PORT = process.env.PORT || 5001;
 
-// Approximate exchange rates to 1 USD for ranking normalization
+// Exchange rates to 1 USD for fair leaderboard sorting
 const USD_RATES = {
   usd: 1.0,
   eur: 1.08,    // 1 EUR ≈ 1.08 USD
@@ -39,14 +39,14 @@ db.serialize(() => {
     )
   `);
 
-  // Safe migrations
+  // Migrations for existing deployments
   db.run(`ALTER TABLE listings ADD COLUMN badge_type TEXT DEFAULT 'open_to_work'`, () => {});
   db.run(`ALTER TABLE listings ADD COLUMN skills TEXT DEFAULT ''`, () => {});
   db.run(`ALTER TABLE listings ADD COLUMN original_amount REAL`, () => {});
   db.run(`ALTER TABLE listings ADD COLUMN currency TEXT DEFAULT 'usd'`, () => {});
 });
 
-// 2. Stripe Webhook Endpoint (Requires raw body)
+// 2. Stripe Webhook Endpoint (Raw body for signature verification)
 app.post(
   '/api/webhook',
   express.raw({ type: 'application/json' }),
@@ -93,11 +93,11 @@ app.post(
   }
 );
 
-// 3. Standard middleware
+// 3. Application Middlewares
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// 4. API: Standings (Sorted by normalized USD amount descending)
+// 4. API: Standings (Ordered by normalized USD amount)
 app.get('/api/standings', (req, res) => {
   const query = `
     SELECT id, name, headline, linkedin_url, amount, original_amount, currency, badge_type, skills, created_at
@@ -115,7 +115,7 @@ app.get('/api/standings', (req, res) => {
   });
 });
 
-// 5. API: Checkout Session with Currency Conversion
+// 5. API: Checkout Session (Stripe Dynamic Payment Methods)
 app.post('/api/checkout', async (req, res) => {
   const { name, headline, linkedin_url, amount, currency = 'usd', badge_type, skills } = req.body;
 
@@ -127,7 +127,7 @@ app.post('/api/checkout', async (req, res) => {
   const rate = USD_RATES[selectedCurrency] || 1.0;
   const rawAmount = Math.max(1, parseFloat(amount));
 
-  // Normalized USD value stored in `amount` for fair leaderboard sorting
+  // Normalized USD amount stored for fair rank positioning
   const normalizedUsd = Math.round(rawAmount * rate * 100) / 100;
 
   const bidId = `bid_${Date.now()}`;
@@ -154,7 +154,6 @@ app.post('/api/checkout', async (req, res) => {
 
       try {
         const session = await stripe.checkout.sessions.create({
-          payment_method_types: ['card'],
           line_items: [
             {
               price_data: {
@@ -163,7 +162,7 @@ app.post('/api/checkout', async (req, res) => {
                   name: `LinkedRank Spotlight: ${name}`,
                   description: `${headline} [${badge_type}]`,
                 },
-                unit_amount: Math.round(rawAmount * 100), // Stripe takes smallest unit (cents/pence/paise)
+                unit_amount: Math.round(rawAmount * 100),
               },
               quantity: 1,
             },
@@ -183,7 +182,7 @@ app.post('/api/checkout', async (req, res) => {
   );
 });
 
-// 6. Express 5 Catch-All Route
+// 6. Catch-All Route (Express 5 syntax)
 app.get('/*splat', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
