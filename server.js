@@ -1,207 +1,174 @@
 require('dotenv').config();
 const express = require('express');
-const cors = require('cors');
-const Stripe = require('stripe');
-const sqlite3 = require('sqlite3').verbose();
-const cron = require('node-cron');
 const path = require('path');
+const sqlite3 = require('sqlite3').verbose();
+const Stripe = require('stripe');
 
 const app = express();
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-const db = new sqlite3.Database('./database.sqlite');
+const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 const PORT = process.env.PORT || 5001;
-const BASE_URL = process.env.BASE_URL || `http://localhost:${PORT}`;
 
-// --- 1. Database Initialization ---
+// 1. Initialize SQLite Database
+const db = new sqlite3.Database(path.join(__dirname, 'database.sqlite'), (err) => {
+  if (err) console.error('Database connection error:', err.message);
+  else console.log('Connected to SQLite database.');
+});
+
 db.serialize(() => {
-  // Rounds Table
-  db.run(`
-    CREATE TABLE IF NOT EXISTS rounds (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      roundNumber INTEGER UNIQUE,
-      isActive INTEGER DEFAULT 1,
-      endsAt DATETIME,
-      createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
-    )
-  `);
-
-  // Listings Table
+  // Create table if it doesn't exist
   db.run(`
     CREATE TABLE IF NOT EXISTS listings (
       id TEXT PRIMARY KEY,
-      roundNumber INTEGER,
-      fullName TEXT,
-      headline TEXT,
-      linkedinUrl TEXT,
-      username TEXT,
-      amountPaidCents INTEGER,
-      isPaid INTEGER DEFAULT 0,
-      createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
+      name TEXT NOT NULL,
+      headline TEXT NOT NULL,
+      linkedin_url TEXT NOT NULL,
+      amount INTEGER NOT NULL,
+      badge_type TEXT DEFAULT 'open_to_work',
+      skills TEXT DEFAULT '',
+      is_paid INTEGER DEFAULT 0,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     )
   `);
 
-  // Initialize Round 1 if none exists
-  db.get(`SELECT * FROM rounds WHERE isActive = 1`, (err, row) => {
-    if (!row) {
-      const nextSunday = getNextSundayEnd();
-      db.run(
-        `INSERT INTO rounds (roundNumber, isActive, endsAt) VALUES (1, 1, ?)`,
-        [nextSunday.toISOString()]
-      );
-    }
-  });
+  // Safe migration columns if table already existed without them
+  db.run(`ALTER TABLE listings ADD COLUMN badge_type TEXT DEFAULT 'open_to_work'`, () => {});
+  db.run(`ALTER TABLE listings ADD COLUMN skills TEXT DEFAULT ''`, () => {});
 });
 
-function getNextSundayEnd() {
-  const d = new Date();
-  const day = d.getUTCDay();
-  const diff = (7 - day) % 7 || 7;
-  d.setUTCDate(d.getUTCDate() + diff);
-  d.setUTCHours(23, 59, 59, 999);
-  return d;
-}
-
-// --- 2. Stripe Webhook (Raw Body parser before express.json) ---
+// 2. Stripe Webhook Endpoint (Must receive raw body for signature verification)
 app.post(
   '/api/webhook',
   express.raw({ type: 'application/json' }),
-  async (req, res) => {
+  (req, res) => {
     const sig = req.headers['stripe-signature'];
-    let event;
+    const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
+    if (!webhookSecret) {
+      console.error('Webhook signature verification failed: No webhook secret value was provided.');
+      return res.status(400).send('Webhook secret is not configured.');
+    }
+
+    let event;
     try {
-      event = stripe.webhooks.constructEvent(
-        req.body,
-        sig,
-        process.env.STRIPE_WEBHOOK_SECRET
-      );
+      event = stripe.webhooks.constructEvent(req.body, sig, webhookSecret);
     } catch (err) {
-      console.error('Webhook signature verification failed:', err.message);
+      console.error(`Webhook signature verification failed: ${err.message}`);
       return res.status(400).send(`Webhook Error: ${err.message}`);
     }
 
     if (event.type === 'checkout.session.completed') {
       const session = event.data.object;
-      const listingId = session.metadata?.listingId;
+      const bidId = session.metadata ? session.metadata.bidId : null;
 
-      if (listingId) {
+      if (bidId) {
         db.run(
-          `UPDATE listings SET isPaid = 1 WHERE id = ?`,
-          [listingId],
-          (err) => {
-            if (err) console.error('Error updating paid status:', err);
-            else console.log(`Listing ${listingId} marked as paid!`);
+          `UPDATE listings SET is_paid = 1 WHERE id = ?`,
+          [bidId],
+          function (err) {
+            if (err) {
+              console.error('Error updating listing payment status:', err.message);
+              return res.status(500).send('Database error');
+            }
+            console.log(`Listing ${bidId} marked as paid!`);
+            return res.json({ received: true });
           }
         );
+      } else {
+        return res.json({ received: true });
       }
+    } else {
+      res.json({ received: true });
     }
-
-    res.json({ received: true });
   }
 );
 
-// Standard Middlewares
-app.use(cors());
+// 3. Middleware for regular routes
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// --- 3. API Endpoints ---
+// 4. API: Get Current Standings (Paid Only, Sorted by Bid Descending)
+app.get('/api/standings', (req, res) => {
+  const query = `
+    SELECT id, name, headline, linkedin_url, amount, badge_type, skills, created_at
+    FROM listings
+    WHERE is_paid = 1
+    ORDER BY amount DESC, created_at ASC
+  `;
 
-// Get current round information and rankings
-app.get('/api/board', (req, res) => {
-  db.get(`SELECT * FROM rounds WHERE isActive = 1`, (err, round) => {
-    if (err || !round) return res.status(500).json({ error: 'No active round found' });
-
-    db.all(
-      `SELECT * FROM listings 
-       WHERE roundNumber = ? AND isPaid = 1 
-       ORDER BY amountPaidCents DESC`,
-      [round.roundNumber],
-      (err, listings) => {
-        if (err) return res.status(500).json({ error: err.message });
-        res.json({
-          round,
-          listings: listings || [],
-        });
-      }
-    );
+  db.all(query, [], (err, rows) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    const topSpot = rows.length > 0 ? rows[0].amount : 0;
+    res.json({ standings: rows, topSpot });
   });
 });
 
-// Create Bid & Stripe Checkout Session
-app.post('/api/bid', async (req, res) => {
-  const { fullName, headline, linkedinUrl, amountDollars } = req.body;
+// 5. API: Create Checkout Session
+app.post('/api/checkout', async (req, res) => {
+  const { name, headline, linkedin_url, amount, badge_type, skills } = req.body;
 
-  const pattern = /^https:\/\/(www\.)?linkedin\.com\/(in|company)\/([a-zA-Z0-9_-]+)\/?$/;
-  const match = (linkedinUrl || '').trim().match(pattern);
-
-  const amount = parseFloat(amountDollars);
-  if (!fullName || !headline || !match || isNaN(amount) || amount < 2) {
-    return res.status(400).json({ error: 'Valid LinkedIn URL and minimum $2 bid required.' });
+  if (!name || !headline || !linkedin_url || !amount) {
+    return res.status(400).json({ error: 'Missing required fields' });
   }
 
-  const username = match[3];
-  const amountPaidCents = Math.round(amount * 100);
-  const listingId = 'bid_' + Date.now();
+  const numericAmount = Math.max(1, parseInt(amount, 10));
+  const bidId = `bid_${Date.now()}`;
+  const baseUrl = process.env.BASE_URL || `http://localhost:${PORT}`;
 
-  db.get(`SELECT roundNumber FROM rounds WHERE isActive = 1`, async (err, activeRound) => {
-    if (err || !activeRound) {
-      return res.status(500).json({ error: 'No active round found.' });
-    }
-
-    db.run(
-      `INSERT INTO listings (id, roundNumber, fullName, headline, linkedinUrl, username, amountPaidCents, isPaid)
-       VALUES (?, ?, ?, ?, ?, ?, ?, 0)`,
-      [listingId, activeRound.roundNumber, fullName.trim(), headline.trim(), linkedinUrl.trim(), username, amountPaidCents],
-      async (dbErr) => {
-        if (dbErr) return res.status(500).json({ error: dbErr.message });
-
-        try {
-          const session = await stripe.checkout.sessions.create({
-            mode: 'payment',
-            line_items: [
-              {
-                price_data: {
-                  currency: 'usd',
-                  product_data: {
-                    name: `LinkedRank Spot - ${fullName}`,
-                    description: headline.slice(0, 80),
-                  },
-                  unit_amount: amountPaidCents,
-                },
-                quantity: 1,
-              },
-            ],
-            metadata: { listingId },
-            success_url: `${BASE_URL}/?payment=success`,
-            cancel_url: `${BASE_URL}/?payment=cancelled`,
-          });
-
-          res.json({ checkoutUrl: session.url });
-        } catch (stripeErr) {
-          console.error('Stripe error:', stripeErr);
-          res.status(500).json({ error: stripeErr.message });
-        }
+  db.run(
+    `INSERT INTO listings (id, name, headline, linkedin_url, amount, badge_type, skills, is_paid)
+     VALUES (?, ?, ?, ?, ?, ?, ?, 0)`,
+    [
+      bidId,
+      name.trim(),
+      headline.trim(),
+      linkedin_url.trim(),
+      numericAmount,
+      badge_type || 'open_to_work',
+      (skills || '').trim(),
+    ],
+    async (err) => {
+      if (err) {
+        return res.status(500).json({ error: err.message });
       }
-    );
-  });
+
+      try {
+        const session = await stripe.checkout.sessions.create({
+          payment_method_types: ['card'],
+          line_items: [
+            {
+              price_data: {
+                currency: 'usd',
+                product_data: {
+                  name: `LinkedRank Placement: ${name}`,
+                  description: `${headline} [${badge_type}]`,
+                },
+                unit_amount: numericAmount * 100, // Stripe expects cents
+              },
+              quantity: 1,
+            },
+          ],
+          mode: 'payment',
+          metadata: { bidId },
+          success_url: `${baseUrl}/?payment=success`,
+          cancel_url: `${baseUrl}/?payment=cancelled`,
+        });
+
+        res.json({ url: session.url });
+      } catch (stripeErr) {
+        console.error('Stripe session creation error:', stripeErr.message);
+        res.status(500).json({ error: stripeErr.message });
+      }
+    }
+  );
 });
 
-// --- 4. Sunday Reset Cron Job (Runs every Sunday at 23:59:00 UTC) ---
-cron.schedule('59 23 * * 0', () => {
-  console.log('Resetting weekly round...');
-  db.get(`SELECT * FROM rounds WHERE isActive = 1`, (err, current) => {
-    if (current) {
-      db.run(`UPDATE rounds SET isActive = 0 WHERE id = ?`, [current.id]);
-      const nextSunday = getNextSundayEnd();
-      db.run(
-        `INSERT INTO rounds (roundNumber, isActive, endsAt) VALUES (?, 1, ?)`,
-        [current.roundNumber + 1, nextSunday.toISOString()]
-      );
-    }
-  });
-}, { timezone: 'UTC' });
+// Fallback to index.html
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
 
 app.listen(PORT, () => {
-  console.log(`Server running at ${BASE_URL}`);
+  console.log(`Server running at ${process.env.BASE_URL || `http://localhost:${PORT}`}`);
 });

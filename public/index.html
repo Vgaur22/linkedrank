@@ -3,210 +3,334 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LinkedRank — The Top Billed LinkedIn Profiles</title>
+  <title>LinkedRank — Weekly Vanity & Tech Talent Arena</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .mono { font-family: 'JetBrains Mono', monospace; }
+  </style>
 </head>
-<body class="bg-slate-900 text-slate-100 min-h-screen">
-  
-  <header class="border-b border-slate-800 bg-slate-900/90 backdrop-blur sticky top-0 z-40">
-    <div class="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
-      <div class="flex items-center space-x-3">
-        <div class="w-9 h-9 rounded-lg bg-blue-600 flex items-center justify-center font-bold text-white text-lg shadow-lg shadow-blue-500/20">
+<body class="bg-[#0b0f19] text-slate-100 min-h-screen flex flex-col justify-between selection:bg-blue-600 selection:text-white">
+
+  <!-- Top Navigation -->
+  <header class="border-b border-slate-800/80 bg-[#0b0f19]/80 backdrop-blur sticky top-0 z-40">
+    <div class="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center font-bold text-white shadow-lg shadow-blue-600/30">
           in
         </div>
         <div>
-          <h1 class="text-lg font-bold leading-none tracking-tight">LinkedRank</h1>
-          <span class="text-xs text-slate-400">Rank is what you pay. Resets weekly.</span>
+          <span class="font-extrabold tracking-tight text-lg text-white">LinkedRank</span>
+          <span class="hidden sm:inline-block text-xs text-slate-500 ml-2">Rank is what you pay. Resets weekly.</span>
         </div>
       </div>
-      <button onclick="openModal()" class="bg-blue-600 hover:bg-blue-500 text-white font-medium px-4 py-2 rounded-lg text-sm transition shadow-lg shadow-blue-600/20 flex items-center space-x-2">
-        <span>Claim Rank</span>
-        <i class="fa-solid fa-arrow-trend-up"></i>
+      <button onclick="openModal()" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm rounded-xl transition shadow-lg shadow-blue-600/20 active:scale-95 flex items-center gap-1.5">
+        Claim Rank <span class="text-xs">↗</span>
       </button>
     </div>
   </header>
 
-  <main class="max-w-4xl mx-auto px-4 py-8">
-    <div class="bg-gradient-to-r from-blue-950/40 via-slate-800/50 to-indigo-950/40 border border-slate-700/60 rounded-2xl p-6 mb-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-      <div>
-        <div class="inline-flex items-center space-x-2 bg-blue-500/10 text-blue-400 text-xs font-semibold px-2.5 py-1 rounded-full border border-blue-500/20 mb-2">
-          <span class="w-2 h-2 rounded-full bg-blue-400 animate-ping"></span>
-          <span id="roundNumber">Round #1 Live</span>
+  <!-- Main Content Container -->
+  <main class="max-w-4xl w-full mx-auto px-4 py-8 flex-1">
+    
+    <!-- Hero / Tournament Card -->
+    <div class="relative overflow-hidden rounded-2xl border border-slate-800 bg-gradient-to-br from-slate-900/90 via-[#10172a] to-slate-900/80 p-6 md:p-8 mb-8 shadow-2xl">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
+        <div>
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-950/80 border border-blue-800/60 text-blue-400 text-xs font-semibold mb-3">
+            <span class="w-2 h-2 rounded-full bg-blue-500 animate-ping"></span>
+            Round #1 Live
+          </div>
+          <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-white mb-2">
+            Weekly Vanity Arena & Talent Board
+          </h1>
+          <p class="text-slate-400 text-sm max-w-lg">
+            Compete for the top spot. Highlighting founders, engineers, and builders. Top 3 claim permanent placement in the Sunday Hall of Fame.
+          </p>
         </div>
-        <h2 class="text-2xl font-black">Weekly Vanity Arena</h2>
-        <p class="text-slate-400 text-sm mt-1">Top 3 claim permanent placement in the Sunday Hall of Fame.</p>
-      </div>
-      <div class="bg-slate-900/80 border border-slate-700/80 rounded-xl px-5 py-3 text-center sm:text-right">
-        <span class="text-xs text-slate-400 uppercase tracking-wider font-semibold block">Round Closes In</span>
-        <span id="countdown" class="text-xl font-mono font-bold text-amber-400">Loading...</span>
+
+        <!-- Live Countdown Widget -->
+        <div class="bg-slate-950/70 border border-slate-800 rounded-xl p-4 text-center min-w-[210px] shadow-inner">
+          <span class="text-[11px] uppercase tracking-wider text-slate-400 font-bold block mb-1">Round Closes In</span>
+          <div id="countdown" class="mono text-2xl font-black text-amber-400">
+            Calculating...
+          </div>
+        </div>
       </div>
     </div>
 
-    <div class="flex items-center justify-between mb-4">
-      <h3 class="text-lg font-bold">Current Standings</h3>
-      <span id="highestBid" class="text-xs text-slate-400">Top spot: $0</span>
+    <!-- Standings Header & Filter Tabs -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+      <div>
+        <h2 class="text-xl font-bold text-white tracking-tight">Current Standings</h2>
+      </div>
+      <div class="text-xs text-slate-400 mono">
+        Top spot: <span id="top-spot-display" class="font-bold text-emerald-400">$0</span>
+      </div>
     </div>
 
-    <div id="listingsList" class="space-y-3">
-      <div class="text-center py-12 text-slate-500">Loading rankings...</div>
+    <!-- Filter Buttons (Recruiter / Role View) -->
+    <div class="flex flex-wrap items-center gap-2 mb-6 border-b border-slate-800/80 pb-4">
+      <button onclick="setFilter('all')" id="filter-all" class="px-4 py-1.5 rounded-full text-xs font-semibold bg-blue-600 text-white transition shadow-sm">
+        All Leaders
+      </button>
+      <button onclick="setFilter('open_to_work')" id="filter-open" class="px-4 py-1.5 rounded-full text-xs font-semibold bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition flex items-center gap-1.5">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        Open to Work (Recruiter View)
+      </button>
+      <button onclick="setFilter('freelance')" id="filter-freelance" class="px-4 py-1.5 rounded-full text-xs font-semibold bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition">
+        💼 Freelancers & Agencies
+      </button>
+      <button onclick="setFilter('founder')" id="filter-founder" class="px-4 py-1.5 rounded-full text-xs font-semibold bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition">
+        🚀 Founders
+      </button>
+    </div>
+
+    <!-- Standings List Container -->
+    <div id="standings" class="space-y-3">
+      <!-- Injected via JavaScript -->
     </div>
   </main>
 
-  <div id="bidModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
-    <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
-      <button onclick="closeModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white">
-        <i class="fa-solid fa-xmark text-lg"></i>
-      </button>
+  <!-- Footer -->
+  <footer class="border-t border-slate-900 py-6 text-center text-xs text-slate-500">
+    LinkedRank &bull; Built with Node.js, SQLite, Stripe & Render &bull; Resets every Sunday 00:00 UTC
+  </footer>
 
-      <h3 class="text-xl font-bold mb-1">Claim Your Rank</h3>
-      <p class="text-xs text-slate-400 mb-5">Beat the competition. Outbid to take #1 instantly.</p>
+  <!-- Claim Rank Modal -->
+  <div id="modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
+      <button onclick="closeModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-xl">&times;</button>
+      
+      <h3 class="text-lg font-bold text-white mb-1">Claim Your Rank</h3>
+      <p class="text-xs text-slate-400 mb-5">Beat the highest bid to claim #1 instantly.</p>
 
-      <form id="bidForm" onsubmit="submitBid(event)" class="space-y-4">
+      <form id="bid-form" onsubmit="handleFormSubmit(event)" class="space-y-4">
         <div>
-          <label class="block text-xs font-medium text-slate-300 mb-1">Full Name</label>
-          <input required id="fullName" placeholder="Sarah Connor" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm focus:border-blue-500 focus:outline-none" />
+          <label class="block text-xs font-medium text-slate-400 mb-1">Full Name</label>
+          <input required id="bid-name" type="text" placeholder="e.g. Vishvapriya Gaur" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-white text-sm focus:border-blue-500 focus:outline-none" />
         </div>
 
         <div>
-          <label class="block text-xs font-medium text-slate-300 mb-1">Headline / Title</label>
-          <input required id="headline" placeholder="Founder & CEO @ Stealth" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm focus:border-blue-500 focus:outline-none" />
+          <label class="block text-xs font-medium text-slate-400 mb-1">Headline / Role</label>
+          <input required id="bid-headline" type="text" placeholder="e.g. Full-Stack Dev | Masters in Germany" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-white text-sm focus:border-blue-500 focus:outline-none" />
         </div>
 
         <div>
-          <label class="block text-xs font-medium text-slate-300 mb-1">LinkedIn Profile URL</label>
-          <input required id="linkedinUrl" type="url" placeholder="https://linkedin.com/in/username" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm focus:border-blue-500 focus:outline-none" />
+          <label class="block text-xs font-medium text-slate-400 mb-1">LinkedIn Profile URL</label>
+          <input required id="bid-url" type="url" placeholder="https://www.linkedin.com/in/username" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-white text-sm focus:border-blue-500 focus:outline-none" />
         </div>
 
-        <div>
-          <label class="block text-xs font-medium text-slate-300 mb-1">Bid Amount (USD)</label>
-          <div class="relative">
-            <span class="absolute left-3 top-2 text-slate-400">$</span>
-            <input required id="amount" type="number" min="2" step="1" placeholder="5" class="w-full bg-slate-800 border border-slate-700 rounded-lg pl-7 pr-3 py-2 text-sm focus:border-blue-500 focus:outline-none font-bold text-white" />
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-medium text-slate-400 mb-1">Status / Badge</label>
+            <select id="bid-badge" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white text-xs focus:border-blue-500 focus:outline-none">
+              <option value="open_to_work">🟢 Open to Work</option>
+              <option value="freelance">💼 Freelancer</option>
+              <option value="founder">🚀 Founder</option>
+            </select>
           </div>
-          <span id="minBidHint" class="text-[11px] text-slate-400 mt-1 block">Minimum bid: $2</span>
+          <div>
+            <label class="block text-xs font-medium text-slate-400 mb-1">Bid Amount ($ USD)</label>
+            <input required id="bid-amount" type="number" min="1" step="1" value="5" class="mono w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-white text-sm font-bold focus:border-blue-500 focus:outline-none" />
+          </div>
         </div>
 
-        <button type="submit" id="submitBtn" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-2.5 rounded-lg text-sm transition flex items-center justify-center space-x-2">
-          <span>Proceed to Stripe Checkout</span>
-          <i class="fa-solid fa-lock text-xs"></i>
+        <div>
+          <label class="block text-xs font-medium text-slate-400 mb-1">Key Tech Skills (comma-separated)</label>
+          <input id="bid-skills" type="text" placeholder="Node.js, Express, Stripe, Python" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-white text-sm focus:border-blue-500 focus:outline-none" />
+        </div>
+
+        <button type="submit" id="submit-btn" class="w-full py-2.5 bg-blue-600 hover:bg-blue-500 font-semibold text-sm rounded-xl text-white transition shadow-lg shadow-blue-600/30 flex items-center justify-center gap-2">
+          Proceed to Stripe Checkout
         </button>
       </form>
     </div>
   </div>
 
   <script>
-    let topBid = 0;
-    let endsAt = null;
+    let allStandings = [];
+    let currentFilter = 'all';
+    let highestSpot = 0;
 
-    async function loadData() {
+    // Load Standings from Server
+    async function fetchStandings() {
       try {
-        const res = await fetch('/api/board');
+        const res = await fetch('/api/standings');
         const data = await res.json();
+        allStandings = data.standings || [];
+        highestSpot = data.topSpot || 0;
         
-        document.getElementById('roundNumber').textContent = `Round #${data.round.roundNumber} Live`;
-        endsAt = new Date(data.round.endsAt);
+        document.getElementById('top-spot-display').textContent = `$${highestSpot}`;
+        
+        // Suggest minimum outbid
+        const suggested = highestSpot > 0 ? highestSpot + 1 : 2;
+        document.getElementById('bid-amount').value = suggested;
 
-        const list = document.getElementById('listingsList');
-        if (data.listings.length === 0) {
-          topBid = 0;
-          list.innerHTML = `
-            <div class="text-center py-12 border border-dashed border-slate-800 rounded-xl">
-              <p class="text-slate-400 text-sm">No bids placed this week yet.</p>
-              <button onclick="openModal()" class="mt-3 text-blue-400 text-xs hover:underline font-medium">Be the first to claim #1 for $2 →</button>
-            </div>
-          `;
-        } else {
-          topBid = data.listings[0].amountPaidCents / 100;
-          document.getElementById('highestBid').textContent = `Top spot: $${topBid}`;
-          document.getElementById('minBidHint').textContent = `Minimum bid: $2 | To take #1: $${topBid + 1}`;
-
-          list.innerHTML = data.listings.map((item, idx) => {
-            const dollars = item.amountPaidCents / 100;
-            const isFirst = idx === 0;
-            return `
-              <div class="flex items-center justify-between p-4 rounded-xl border ${isFirst ? 'bg-amber-950/20 border-amber-500/40' : 'bg-slate-800/40 border-slate-800'} transition hover:border-slate-700">
-                <div class="flex items-center space-x-4">
-                  <span class="w-6 text-center font-black ${isFirst ? 'text-amber-400' : 'text-slate-500'} text-lg">#${idx + 1}</span>
-                  <img src="https://unavatar.io/linkedin/${item.username}" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(item.fullName)}&background=0D8ABC&color=fff'" class="w-11 h-11 rounded-full object-cover border border-slate-700" />
-                  <div>
-                    <a href="${item.linkedinUrl}" target="_blank" class="font-bold text-sm text-slate-100 hover:text-blue-400 flex items-center gap-1.5">
-                      ${item.fullName}
-                      <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-slate-500"></i>
-                    </a>
-                    <p class="text-xs text-slate-400 line-clamp-1 max-w-sm sm:max-w-md">${item.headline}</p>
-                  </div>
-                </div>
-                <div class="text-right">
-                  <span class="font-mono font-bold ${isFirst ? 'text-amber-400' : 'text-slate-200'} text-sm">$${dollars}</span>
-                </div>
-              </div>
-            `;
-          }).join('');
-        }
+        renderStandings();
       } catch (err) {
-        console.error(err);
+        console.error('Failed to fetch standings:', err);
       }
     }
 
-    setInterval(() => {
-      if (!endsAt) return;
-      const diff = endsAt - new Date();
-      if (diff <= 0) {
-        document.getElementById('countdown').textContent = 'Round Ended';
+    // Filter Switcher
+    function setFilter(filter) {
+      currentFilter = filter;
+      const filters = ['all', 'open_to_work', 'freelance', 'founder'];
+      
+      filters.forEach(f => {
+        const btnId = f === 'open_to_work' ? 'filter-open' : `filter-${f}`;
+        const el = document.getElementById(btnId);
+        if (!el) return;
+
+        if (f === filter) {
+          el.className = "px-4 py-1.5 rounded-full text-xs font-semibold bg-blue-600 text-white transition shadow-sm flex items-center gap-1.5";
+        } else {
+          el.className = "px-4 py-1.5 rounded-full text-xs font-semibold bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition flex items-center gap-1.5";
+        }
+      });
+
+      renderStandings();
+    }
+
+    // Render Standings List
+    function renderStandings() {
+      const container = document.getElementById('standings');
+      const filtered = allStandings.filter(b => currentFilter === 'all' || b.badge_type === currentFilter);
+
+      if (!filtered.length) {
+        container.innerHTML = `
+          <div class="rounded-2xl border border-slate-800/80 bg-slate-950/40 p-12 text-center">
+            <p class="text-slate-400 text-sm mb-3">No bids placed in this category yet.</p>
+            <button onclick="openModal()" class="text-blue-400 hover:underline text-xs font-semibold">
+              Be the first to claim this spot &rarr;
+            </button>
+          </div>
+        `;
         return;
       }
-      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
-      const mins = Math.floor((diff / 1000 / 60) % 60);
-      const secs = Math.floor((diff / 1000) % 60);
-      document.getElementById('countdown').textContent = `${days}d ${hours}h ${mins}m ${secs}s`;
-    }, 1000);
 
-    function openModal() {
-      document.getElementById('amount').value = topBid > 0 ? topBid + 1 : 5;
-      document.getElementById('bidModal').classList.remove('hidden');
+      container.innerHTML = filtered.map((b, idx) => {
+        const isPodium = idx === 0;
+        const rankColor = idx === 0 ? 'text-amber-400' : idx === 1 ? 'text-slate-300' : idx === 2 ? 'text-amber-600' : 'text-slate-500';
+        
+        let badgeHtml = '';
+        if (b.badge_type === 'open_to_work') {
+          badgeHtml = `<span class="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full bg-emerald-950/80 text-emerald-400 border border-emerald-800/60 font-semibold">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> Open to Work
+          </span>`;
+        } else if (b.badge_type === 'freelance') {
+          badgeHtml = `<span class="text-[11px] px-2 py-0.5 rounded-full bg-amber-950/80 text-amber-300 border border-amber-800/60 font-semibold">💼 Freelancer</span>`;
+        } else {
+          badgeHtml = `<span class="text-[11px] px-2 py-0.5 rounded-full bg-purple-950/80 text-purple-300 border border-purple-800/60 font-semibold">🚀 Founder</span>`;
+        }
+
+        const skillsHtml = b.skills ? `
+          <div class="flex flex-wrap gap-1 mt-2">
+            ${b.skills.split(',').map(s => s.trim()).filter(Boolean).map(s => `
+              <span class="text-[10px] bg-slate-800 text-slate-300 px-2 py-0.5 rounded font-medium">${s}</span>
+            `).join('')}
+          </div>
+        ` : '';
+
+        return `
+          <div class="flex items-center justify-between p-4 bg-slate-900/60 hover:bg-slate-900/90 border ${isPodium ? 'border-amber-500/40' : 'border-slate-800'} rounded-2xl transition">
+            <div class="flex items-start gap-4">
+              <span class="mono text-lg font-bold ${rankColor} w-8 pt-0.5">#${idx + 1}</span>
+              <div>
+                <div class="flex flex-wrap items-center gap-2">
+                  <a href="${b.linkedin_url}" target="_blank" rel="noopener noreferrer" class="font-bold text-white hover:text-blue-400 flex items-center gap-1">
+                    ${b.name} <span class="text-xs text-slate-500">↗</span>
+                  </a>
+                  ${badgeHtml}
+                </div>
+                <p class="text-xs text-slate-400 mt-0.5 font-medium">${b.headline}</p>
+                ${skillsHtml}
+              </div>
+            </div>
+            <div class="mono font-bold text-emerald-400 text-lg ml-4">
+              $${b.amount}
+            </div>
+          </div>
+        `;
+      }).join('');
     }
 
-    function closeModal() {
-      document.getElementById('bidModal').classList.add('hidden');
-    }
+    // Modal Controls
+    function openModal() { document.getElementById('modal').classList.remove('hidden'); }
+    function closeModal() { document.getElementById('modal').classList.add('hidden'); }
 
-    async function submitBid(e) {
+    // Checkout Form Handler
+    async function handleFormSubmit(e) {
       e.preventDefault();
-      const btn = document.getElementById('submitBtn');
-      btn.innerText = 'Creating session...';
+      const btn = document.getElementById('submit-btn');
       btn.disabled = true;
+      btn.innerText = 'Redirecting to Stripe...';
 
       const payload = {
-        fullName: document.getElementById('fullName').value,
-        headline: document.getElementById('headline').value,
-        linkedinUrl: document.getElementById('linkedinUrl').value,
-        amountDollars: document.getElementById('amount').value
+        name: document.getElementById('bid-name').value,
+        headline: document.getElementById('bid-headline').value,
+        linkedin_url: document.getElementById('bid-url').value,
+        badge_type: document.getElementById('bid-badge').value,
+        amount: document.getElementById('bid-amount').value,
+        skills: document.getElementById('bid-skills').value
       };
 
       try {
-        const res = await fetch('/api/bid', {
+        const res = await fetch('/api/checkout', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
         });
+
         const data = await res.json();
-        if (data.checkoutUrl) {
-          window.location.href = data.checkoutUrl;
+        if (data.url) {
+          window.location.href = data.url;
         } else {
-          alert(data.error || 'Failed to initialize payment.');
-          btn.innerText = 'Proceed to Stripe Checkout';
+          alert('Error: ' + (data.error || 'Failed to initiate checkout'));
           btn.disabled = false;
+          btn.innerText = 'Proceed to Stripe Checkout';
         }
       } catch (err) {
-        alert('Server connection error.');
-        btn.innerText = 'Proceed to Stripe Checkout';
+        alert('Payment initiation failed: ' + err.message);
         btn.disabled = false;
+        btn.innerText = 'Proceed to Stripe Checkout';
       }
     }
 
-    loadData();
+    // Countdown Timer (Next Sunday 23:59:59 UTC)
+    function updateCountdown() {
+      const now = new Date();
+      const day = now.getUTCDay(); // 0 is Sunday
+      const diffDays = (7 - day) % 7;
+      
+      const target = new Date(Date.UTC(
+        now.getUTCFullYear(),
+        now.getUTCMonth(),
+        now.getUTCDate() + diffDays,
+        23, 59, 59
+      ));
+
+      const diff = target - now;
+      if (diff <= 0) {
+        document.getElementById('countdown').textContent = 'RESETTING...';
+        return;
+      }
+
+      const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
+      const m = Math.floor((diff / 1000 / 60) % 60);
+      const s = Math.floor((diff / 1000) % 60);
+
+      document.getElementById('countdown').textContent = `${d}d ${h}h ${m}m ${s}s`;
+    }
+
+    setInterval(updateCountdown, 1000);
+    updateCountdown();
+    fetchStandings();
   </script>
 </body>
 </html>
