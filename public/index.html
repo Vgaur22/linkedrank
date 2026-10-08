@@ -5,14 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LinkedRank — Weekly Spotlight Board</title>
 
-  <!-- Open Graph Meta Tags for LinkedIn / Social Previews -->
+  <!-- Open Graph Meta Tags for Social Sharing -->
   <meta property="og:title" content="LinkedRank — Weekly Spotlight Board" />
-  <meta property="og:description" content="Compete for visibility. A live ranking platform for engineers, leaders, and founders." />
+  <meta property="og:description" content="A live visibility board connecting proactive engineers, students, and leaders directly with hiring teams." />
   <meta property="og:url" content="https://linkedrank.onrender.com" />
   <meta property="og:type" content="website" />
   <meta name="twitter:card" content="summary" />
   <meta name="twitter:title" content="LinkedRank — Weekly Spotlight Board" />
-  <meta name="twitter:description" content="Compete for visibility. A live ranking platform for engineers, leaders, and founders." />
+  <meta name="twitter:description" content="A live visibility board connecting proactive engineers, students, and leaders directly with hiring teams." />
 
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -37,17 +37,31 @@
           <span class="hidden sm:inline-block text-xs text-slate-500 ml-2">Rank is what you pay. Resets weekly.</span>
         </div>
       </div>
-      <button onclick="openModal()" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm rounded-xl transition shadow-lg shadow-blue-600/20 active:scale-95 flex items-center gap-1.5">
-        Claim Rank <span class="text-xs">↗</span>
-      </button>
+      <div class="flex items-center gap-2">
+        <button onclick="openRecruiterModal()" class="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 font-semibold text-xs rounded-xl transition flex items-center gap-1.5">
+          <span>Hiring? Check In</span>
+        </button>
+        <button onclick="openModal()" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm rounded-xl transition shadow-lg shadow-blue-600/20 active:scale-95 flex items-center gap-1.5">
+          Claim Rank <span class="text-xs">↗</span>
+        </button>
+      </div>
     </div>
   </header>
 
   <!-- Main Body -->
-  <main class="max-w-4xl w-full mx-auto px-4 py-8 flex-1">
+  <main class="max-w-4xl w-full mx-auto px-4 py-6 sm:py-8 flex-1">
     
-    <!-- Hero / Tournament Card -->
-    <div class="relative overflow-hidden rounded-2xl border border-slate-800 bg-gradient-to-br from-slate-900/90 via-[#10172a] to-slate-900/80 p-6 md:p-8 mb-8 shadow-2xl">
+    <!-- Recruiter Sighting Banner (Social Proof) -->
+    <div id="recruiter-banner" class="hidden mb-6 p-3 rounded-xl bg-emerald-950/40 border border-emerald-800/50 flex items-center justify-between text-xs text-emerald-300 transition">
+      <div class="flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span id="recruiter-text">Recent recruiter check-in recorded</span>
+      </div>
+      <span class="text-[11px] text-emerald-400/80 font-mono">Live Scout</span>
+    </div>
+
+    <!-- Tournament Hero Card -->
+    <div class="relative overflow-hidden rounded-2xl border border-slate-800 bg-gradient-to-br from-slate-900/90 via-[#10172a] to-slate-900/80 p-6 md:p-8 mb-6 shadow-2xl">
       <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
         <div>
           <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-950/80 border border-blue-800/60 text-blue-400 text-xs font-semibold mb-3">
@@ -58,7 +72,7 @@
             Weekly Spotlight Board
           </h1>
           <p class="text-slate-400 text-sm max-w-lg">
-            Compete for top visibility. Highlighting engineers, leaders, creators, and founders. Top 3 claim permanent placement in the Sunday Hall of Fame.
+            Direct visibility for engineers, students, and leaders. Top 3 claim placement in the Sunday Hall of Fame.
           </p>
         </div>
 
@@ -72,35 +86,56 @@
       </div>
     </div>
 
-    <!-- Standings Header & Leader Stats -->
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
-      <h2 class="text-xl font-bold text-white tracking-tight">Current Standings</h2>
-      <div class="text-xs text-slate-400 mono">
-        Top spot: <span id="top-spot-display" class="font-bold text-emerald-400">$0</span>
+    <!-- Live LinkedIn Feeds Shortcut Strip -->
+    <div class="flex flex-wrap items-center justify-between gap-2 mb-6 bg-slate-950/60 border border-slate-800/70 rounded-xl px-3.5 py-2 text-xs">
+      <span class="text-slate-400 font-medium">Direct LinkedIn Feeds:</span>
+      <div class="flex items-center gap-2">
+        <a 
+          href="https://www.linkedin.com/search/results/content/?keywords=%22hiring%22%20AND%20(%22software%20engineer%22%20OR%20%22developer%22%20OR%20%22working%20student%22)&sortBy=%22date_posted%22" 
+          target="_blank" 
+          rel="noopener noreferrer" 
+          class="px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-emerald-400 font-semibold transition flex items-center gap-1">
+          Active Hiring Posts ↗
+        </a>
+        <a 
+          href="https://www.linkedin.com/search/results/content/?keywords=%23opentowork%20AND%20(%22software%20engineer%22%20OR%20%22developer%22)&sortBy=%22date_posted%22" 
+          target="_blank" 
+          rel="noopener noreferrer" 
+          class="px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-blue-400 font-semibold transition flex items-center gap-1">
+          #OpenToWork Stream ↗
+        </a>
       </div>
     </div>
 
-    <!-- Role Filter Buttons -->
+    <!-- Standings Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-3">
+      <h2 class="text-xl font-bold text-white tracking-tight">Current Standings</h2>
+      <div class="text-xs text-slate-400 mono">
+        Top spot: <span id="top-spot-display" class="font-bold text-emerald-400">$0.00</span>
+      </div>
+    </div>
+
+    <!-- Role Filter Buttons (Deep linked via URL Hash) -->
     <div class="flex flex-wrap items-center gap-2 mb-6 border-b border-slate-800/80 pb-4">
-      <button onclick="setFilter('all')" id="filter-all" class="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-blue-600 text-white transition shadow-sm">
+      <button onclick="changeTab('all')" id="filter-all" class="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-blue-600 text-white transition shadow-sm">
         All Leaders
       </button>
-      <button onclick="setFilter('open_to_work')" id="filter-open_to_work" class="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition">
+      <button onclick="changeTab('open_to_work')" id="filter-open_to_work" class="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition">
         Open to Work
       </button>
-      <button onclick="setFilter('student_working')" id="filter-student_working" class="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition">
+      <button onclick="changeTab('student_working')" id="filter-student_working" class="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition">
         Student / Working
       </button>
-      <button onclick="setFilter('tech')" id="filter-tech" class="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition">
+      <button onclick="changeTab('tech')" id="filter-tech" class="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition">
         Engineering & Tech
       </button>
-      <button onclick="setFilter('manager')" id="filter-manager" class="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition">
+      <button onclick="changeTab('manager')" id="filter-manager" class="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition">
         Leader / Manager
       </button>
-      <button onclick="setFilter('creator')" id="filter-creator" class="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition">
+      <button onclick="changeTab('creator')" id="filter-creator" class="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition">
         Creator / Builder
       </button>
-      <button onclick="setFilter('founder')" id="filter-founder" class="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition">
+      <button onclick="changeTab('founder')" id="filter-founder" class="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition">
         Founder
       </button>
     </div>
@@ -114,7 +149,7 @@
     LinkedRank &bull; Built with Node.js, SQLite, Stripe & Render &bull; Resets every Sunday 00:00 UTC
   </footer>
 
-  <!-- Claim Modal -->
+  <!-- Claim Rank Modal -->
   <div id="modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
     <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
       <button onclick="closeModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-xl">&times;</button>
@@ -150,7 +185,6 @@
           </select>
         </div>
 
-        <!-- Currency & Bid Amount -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <label class="block text-xs font-medium text-slate-400 mb-1">Currency</label>
@@ -165,7 +199,7 @@
             <label class="block text-xs font-medium text-slate-400 mb-1">
               Bid Amount (<span id="currency-label">$</span>)
             </label>
-            <input required id="bid-amount" type="number" min="1" step="any" class="mono w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-white text-sm font-bold focus:border-blue-500 focus:outline-none" />
+            <input required id="bid-amount" type="number" min="1" step="any" value="5" class="mono w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-white text-sm font-bold focus:border-blue-500 focus:outline-none" />
           </div>
         </div>
 
@@ -176,6 +210,34 @@
 
         <button type="submit" id="submit-btn" class="w-full py-2.5 bg-blue-600 hover:bg-blue-500 font-semibold text-sm rounded-xl text-white transition shadow-lg shadow-blue-600/30 flex items-center justify-center gap-2">
           Proceed to Stripe Checkout
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Recruiter Check-In Modal -->
+  <div id="recruiter-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-sm w-full p-6 shadow-2xl relative">
+      <button onclick="closeRecruiterModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-xl">&times;</button>
+      
+      <h3 class="text-lg font-bold text-white mb-1">Recruiter Check-In</h3>
+      <p class="text-xs text-slate-400 mb-4">Let candidates know active hiring managers are reviewing this board.</p>
+
+      <form id="recruiter-form" onsubmit="handleRecruiterSubmit(event)" class="space-y-3">
+        <div>
+          <label class="block text-xs font-medium text-slate-400 mb-1">Your Name</label>
+          <input required id="rec-name" type="text" placeholder="e.g. Jonas Müller" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white text-xs focus:border-blue-500 focus:outline-none" />
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-slate-400 mb-1">Company / Organization</label>
+          <input required id="rec-company" type="text" placeholder="e.g. N26 / Zalando" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white text-xs focus:border-blue-500 focus:outline-none" />
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-slate-400 mb-1">Roles You Are Scouting</label>
+          <input required id="rec-role" type="text" placeholder="e.g. Working Student, Full-Stack" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white text-xs focus:border-blue-500 focus:outline-none" />
+        </div>
+        <button type="submit" class="w-full py-2 bg-emerald-600 hover:bg-emerald-500 font-semibold text-xs rounded-xl text-white transition shadow-lg shadow-emerald-600/30">
+          Check In to Board
         </button>
       </form>
     </div>
@@ -192,8 +254,7 @@
     function calculateSuggestedBid(currency) {
       const targetUsd = highestSpotUsd > 0 ? highestSpotUsd + 1 : 3;
       const rate = USD_RATES[currency] || 1.0;
-      const localAmount = Math.ceil(targetUsd / rate);
-      return localAmount;
+      return Math.ceil(targetUsd / rate);
     }
 
     function onCurrencyChange() {
@@ -207,19 +268,15 @@
       const locale = navigator.language || navigator.languages?.[0] || 'en-US';
       const curSelect = document.getElementById('bid-currency');
 
-      if (locale.includes('IN')) {
-        curSelect.value = 'inr';
-      } else if (locale.includes('DE') || locale.includes('FR') || locale.includes('ES') || locale.includes('IT')) {
-        curSelect.value = 'eur';
-      } else if (locale.includes('GB')) {
-        curSelect.value = 'gbp';
-      } else {
-        curSelect.value = 'usd';
-      }
+      if (locale.includes('IN')) curSelect.value = 'inr';
+      else if (locale.includes('DE') || locale.includes('FR') || locale.includes('ES') || locale.includes('IT')) curSelect.value = 'eur';
+      else if (locale.includes('GB')) curSelect.value = 'gbp';
+      else curSelect.value = 'usd';
+
       onCurrencyChange();
     }
 
-    // Fetch Standings from backend
+    // Fetch Standings
     async function fetchStandings() {
       try {
         const res = await fetch('/api/standings');
@@ -238,23 +295,25 @@
       }
     }
 
-    // Role Filter Selection
-    function setFilter(filter) {
+    // Tab Change with URL Hash synchronization
+    function changeTab(filter) {
       currentFilter = filter;
+      window.location.hash = filter === 'all' ? '' : filter;
+      applyTabStyle();
+      renderStandings();
+    }
+
+    function applyTabStyle() {
       const filters = ['all', 'open_to_work', 'student_working', 'tech', 'manager', 'creator', 'founder'];
-      
       filters.forEach(f => {
         const el = document.getElementById(`filter-${f}`);
         if (!el) return;
-
-        if (f === filter) {
+        if (f === currentFilter) {
           el.className = "px-3.5 py-1.5 rounded-full text-xs font-semibold bg-blue-600 text-white transition shadow-sm";
         } else {
           el.className = "px-3.5 py-1.5 rounded-full text-xs font-semibold bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition";
         }
       });
-
-      renderStandings();
     }
 
     // Render Standings
@@ -278,12 +337,13 @@
         const isPodium = idx === 0;
         const rankColor = idx === 0 ? 'text-amber-400' : idx === 1 ? 'text-slate-300' : idx === 2 ? 'text-amber-600' : 'text-slate-500';
         
+        // Extract LinkedIn username slug for avatars and 1-click messaging
         let username = '';
         try {
           const match = b.linkedin_url.match(/linkedin\.com\/in\/([^\/\?#]+)/i);
-          username = match ? match[1] : encodeURIComponent(b.name);
+          username = match ? match[1] : '';
         } catch (e) {
-          username = encodeURIComponent(b.name);
+          username = '';
         }
 
         const fallbackInitials = `https://api.dicebear.com/10.x/initials/svg?seed=${encodeURIComponent(b.name)}&backgroundColor=1e293b&textColor=38bdf8`;
@@ -325,8 +385,13 @@
         const curSym = CURRENCY_SYMBOLS[paidCur] || '$';
         const displayPaid = b.original_amount ? `${curSym}${b.original_amount}` : `$${b.amount}`;
 
+        // Direct connect messaging link
+        const messageLink = username 
+          ? `https://www.linkedin.com/messaging/thread/new/?recipient=${username}`
+          : b.linkedin_url;
+
         return `
-          <div class="flex items-center justify-between p-4 bg-slate-900/60 hover:bg-slate-900/90 border ${isPodium ? 'border-amber-500/40' : 'border-slate-800'} rounded-2xl transition">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-slate-900/60 hover:bg-slate-900/90 border ${isPodium ? 'border-amber-500/40' : 'border-slate-800'} rounded-2xl transition gap-3">
             <div class="flex items-start gap-3 sm:gap-4">
               <span class="mono text-lg font-bold ${rankColor} w-7 sm:w-8 pt-1 text-center">#${idx + 1}</span>
               
@@ -346,10 +411,20 @@
                 </div>
                 <p class="text-xs text-slate-400 mt-0.5 font-medium">${b.headline}</p>
                 ${skillsHtml}
+                
+                <!-- Direct Connect Actions -->
+                <div class="flex items-center gap-2 mt-2.5">
+                  <a href="${b.linkedin_url}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-[11px] font-semibold text-slate-300 transition">
+                    View Profile ↗
+                  </a>
+                  <a href="${messageLink}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 rounded-lg bg-blue-950/80 hover:bg-blue-900 border border-blue-800/60 text-[11px] font-semibold text-blue-300 transition flex items-center gap-1">
+                    Send Message 💬
+                  </a>
+                </div>
               </div>
             </div>
 
-            <div class="text-right ml-4 flex-shrink-0">
+            <div class="text-right sm:ml-4 flex-shrink-0 self-end sm:self-center">
               <div class="mono font-bold text-emerald-400 text-lg">${displayPaid}</div>
               ${paidCur !== 'usd' ? `<div class="text-[10px] text-slate-500 mono">≈ $${b.amount} USD</div>` : ''}
             </div>
@@ -358,14 +433,36 @@
       }).join('');
     }
 
-    // Modal controls
+    // Modal Controls
     function openModal() {
       onCurrencyChange();
       document.getElementById('modal').classList.remove('hidden');
     }
-    
     function closeModal() {
       document.getElementById('modal').classList.add('hidden');
+    }
+
+    function openRecruiterModal() {
+      document.getElementById('recruiter-modal').classList.remove('hidden');
+    }
+    function closeRecruiterModal() {
+      document.getElementById('recruiter-modal').classList.add('hidden');
+    }
+
+    // Recruiter Check-In Handler
+    function handleRecruiterSubmit(e) {
+      e.preventDefault();
+      const name = document.getElementById('rec-name').value;
+      const comp = document.getElementById('rec-company').value;
+      const role = document.getElementById('rec-role').value;
+
+      const banner = document.getElementById('recruiter-banner');
+      const text = document.getElementById('recruiter-text');
+      text.innerHTML = `<strong>${name}</strong> from <strong>${comp}</strong> checked in scouting for <em>${role}</em>`;
+      banner.classList.remove('hidden');
+
+      closeRecruiterModal();
+      alert('Thank you for checking in! Candidates can now see that active scouts are checking the board.');
     }
 
     // Checkout Form Handler
@@ -407,7 +504,7 @@
       }
     }
 
-    // Countdown Timer (Weekly Sunday 23:59:59 UTC)
+    // Weekly Countdown Timer (Sundays 23:59:59 UTC)
     function updateCountdown() {
       const now = new Date();
       const day = now.getUTCDay();
@@ -434,8 +531,36 @@
       document.getElementById('countdown').textContent = `${d}d ${h}h ${m}m ${s}s`;
     }
 
+    // Return URL handling from Stripe
+    function handlePaymentReturn() {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('payment') === 'success') {
+        window.history.replaceState({}, document.title, window.location.pathname);
+        alert('🎉 Payment confirmed! Your rank is now live on the board.');
+      } else if (params.get('payment') === 'cancelled') {
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+    }
+
+    // Synchronize initial URL hash (e.g. #open_to_work)
+    function handleUrlHash() {
+      const hash = window.location.hash.replace('#', '');
+      const valid = ['open_to_work', 'student_working', 'tech', 'manager', 'creator', 'founder'];
+      if (valid.includes(hash)) {
+        currentFilter = hash;
+        applyTabStyle();
+      }
+    }
+
+    window.addEventListener('hashchange', () => {
+      handleUrlHash();
+      renderStandings();
+    });
+
     setInterval(updateCountdown, 1000);
     updateCountdown();
+    handlePaymentReturn();
+    handleUrlHash();
     autoDetectCurrency();
     fetchStandings();
   </script>
