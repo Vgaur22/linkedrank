@@ -165,7 +165,7 @@ app.post('/api/checkout', async (req, res) => {
 });
 
 // Fallback to index.html
-app.get('*', (req, res) => {
+app.get('/*splat', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
