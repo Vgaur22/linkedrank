@@ -259,6 +259,18 @@
         const isPodium = idx === 0;
         const rankColor = idx === 0 ? 'text-amber-400' : idx === 1 ? 'text-slate-300' : idx === 2 ? 'text-amber-600' : 'text-slate-500';
         
+        // Extract LinkedIn username slug for avatar lookup
+        let username = '';
+        try {
+          const match = b.linkedin_url.match(/linkedin\.com\/in\/([^\/\?#]+)/i);
+          username = match ? match[1] : encodeURIComponent(b.name);
+        } catch (e) {
+          username = encodeURIComponent(b.name);
+        }
+
+        const fallbackInitials = `https://api.dicebear.com/10.x/initials/svg?seed=${encodeURIComponent(b.name)}&backgroundColor=1e293b&textColor=38bdf8`;
+        const avatarUrl = username ? `https://unavatar.io/linkedin/${username}?fallback=${encodeURIComponent(fallbackInitials)}` : fallbackInitials;
+
         let badgeHtml = '';
         switch (b.badge_type) {
           case 'open_to_work':
@@ -298,8 +310,17 @@
 
         return `
           <div class="flex items-center justify-between p-4 bg-slate-900/60 hover:bg-slate-900/90 border ${isPodium ? 'border-amber-500/40' : 'border-slate-800'} rounded-2xl transition">
-            <div class="flex items-start gap-4">
-              <span class="mono text-lg font-bold ${rankColor} w-8 pt-0.5">#${idx + 1}</span>
+            <div class="flex items-start gap-3 sm:gap-4">
+              <span class="mono text-lg font-bold ${rankColor} w-7 sm:w-8 pt-1 text-center">#${idx + 1}</span>
+              
+              <!-- Profile Avatar Photo -->
+              <img 
+                src="${avatarUrl}" 
+                alt="${b.name}" 
+                onerror="this.onerror=null; this.src='${fallbackInitials}';"
+                class="w-11 h-11 sm:w-12 sm:h-12 rounded-full object-cover border border-slate-700 bg-slate-800 flex-shrink-0 mt-0.5 shadow-md"
+              />
+
               <div>
                 <div class="flex flex-wrap items-center gap-2">
                   <a href="${b.linkedin_url}" target="_blank" rel="noopener noreferrer" class="font-bold text-white hover:text-blue-400 flex items-center gap-1">
@@ -311,7 +332,8 @@
                 ${skillsHtml}
               </div>
             </div>
-            <div class="text-right ml-4">
+
+            <div class="text-right ml-4 flex-shrink-0">
               <div class="mono font-bold text-emerald-400 text-lg">${displayPaid}</div>
               ${paidCur !== 'usd' ? `<div class="text-[10px] text-slate-500 mono">≈ $${b.amount} USD</div>` : ''}
             </div>
