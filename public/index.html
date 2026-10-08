@@ -4,6 +4,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LinkedRank — Weekly Spotlight Board</title>
+
+  <!-- Open Graph Meta Tags for LinkedIn / Social Previews -->
+  <meta property="og:title" content="LinkedRank — Weekly Spotlight Board" />
+  <meta property="og:description" content="Compete for visibility. A live ranking platform for engineers, leaders, and founders." />
+  <meta property="og:url" content="https://linkedrank.onrender.com" />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="LinkedRank — Weekly Spotlight Board" />
+  <meta name="twitter:description" content="Compete for visibility. A live ranking platform for engineers, leaders, and founders." />
+
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -72,25 +82,25 @@
 
     <!-- Role Filter Buttons -->
     <div class="flex flex-wrap items-center gap-2 mb-6 border-b border-slate-800/80 pb-4">
-      <button onclick="setFilter('all')" id="filter-all" class="px-4 py-1.5 rounded-full text-xs font-semibold bg-blue-600 text-white transition shadow-sm">
+      <button onclick="setFilter('all')" id="filter-all" class="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-blue-600 text-white transition shadow-sm">
         All Leaders
       </button>
-      <button onclick="setFilter('open_to_work')" id="filter-open_to_work" class="px-4 py-1.5 rounded-full text-xs font-semibold bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition">
+      <button onclick="setFilter('open_to_work')" id="filter-open_to_work" class="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition">
         Open to Work
       </button>
-      <button onclick="setFilter('student_working')" id="filter-student_working" class="px-4 py-1.5 rounded-full text-xs font-semibold bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition">
+      <button onclick="setFilter('student_working')" id="filter-student_working" class="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition">
         Student / Working
       </button>
-      <button onclick="setFilter('tech')" id="filter-tech" class="px-4 py-1.5 rounded-full text-xs font-semibold bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition">
+      <button onclick="setFilter('tech')" id="filter-tech" class="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition">
         Engineering & Tech
       </button>
-      <button onclick="setFilter('manager')" id="filter-manager" class="px-4 py-1.5 rounded-full text-xs font-semibold bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition">
+      <button onclick="setFilter('manager')" id="filter-manager" class="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition">
         Leader / Manager
       </button>
-      <button onclick="setFilter('creator')" id="filter-creator" class="px-4 py-1.5 rounded-full text-xs font-semibold bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition">
+      <button onclick="setFilter('creator')" id="filter-creator" class="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition">
         Creator / Builder
       </button>
-      <button onclick="setFilter('founder')" id="filter-founder" class="px-4 py-1.5 rounded-full text-xs font-semibold bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition">
+      <button onclick="setFilter('founder')" id="filter-founder" class="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition">
         Founder
       </button>
     </div>
@@ -115,12 +125,12 @@
       <form id="bid-form" onsubmit="handleFormSubmit(event)" class="space-y-4">
         <div>
           <label class="block text-xs font-medium text-slate-400 mb-1">Full Name</label>
-          <input required id="bid-name" type="text" placeholder="e.g. Vishvaketan Gaur" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-white text-sm focus:border-blue-500 focus:outline-none" />
+          <input required id="bid-name" type="text" placeholder="Full Name" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-white text-sm focus:border-blue-500 focus:outline-none" />
         </div>
 
         <div>
           <label class="block text-xs font-medium text-slate-400 mb-1">Headline / Role</label>
-          <input required id="bid-headline" type="text" placeholder="e.g. Full-Stack Developer | Data Engineer" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-white text-sm focus:border-blue-500 focus:outline-none" />
+          <input required id="bid-headline" type="text" placeholder="e.g. Software Engineer | Product Manager" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-white text-sm focus:border-blue-500 focus:outline-none" />
         </div>
 
         <div>
@@ -144,7 +154,7 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <label class="block text-xs font-medium text-slate-400 mb-1">Currency</label>
-            <select id="bid-currency" onchange="updateCurrencySymbol()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white text-xs focus:border-blue-500 focus:outline-none">
+            <select id="bid-currency" onchange="onCurrencyChange()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white text-xs focus:border-blue-500 focus:outline-none">
               <option value="usd">USD ($)</option>
               <option value="eur">EUR (€)</option>
               <option value="gbp">GBP (£)</option>
@@ -155,13 +165,13 @@
             <label class="block text-xs font-medium text-slate-400 mb-1">
               Bid Amount (<span id="currency-label">$</span>)
             </label>
-            <input required id="bid-amount" type="number" min="1" step="any" value="5" class="mono w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-white text-sm font-bold focus:border-blue-500 focus:outline-none" />
+            <input required id="bid-amount" type="number" min="1" step="any" class="mono w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-white text-sm font-bold focus:border-blue-500 focus:outline-none" />
           </div>
         </div>
 
         <div>
           <label class="block text-xs font-medium text-slate-400 mb-1">Key Tech Skills (comma-separated)</label>
-          <input id="bid-skills" type="text" placeholder="Node.js, Express, Stripe, Python" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-white text-sm focus:border-blue-500 focus:outline-none" />
+          <input id="bid-skills" type="text" placeholder="e.g. Node.js, Express, Stripe, Python" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-white text-sm focus:border-blue-500 focus:outline-none" />
         </div>
 
         <button type="submit" id="submit-btn" class="w-full py-2.5 bg-blue-600 hover:bg-blue-500 font-semibold text-sm rounded-xl text-white transition shadow-lg shadow-blue-600/30 flex items-center justify-center gap-2">
@@ -174,9 +184,23 @@
   <script>
     let allStandings = [];
     let currentFilter = 'all';
-    let highestSpot = 0;
+    let highestSpotUsd = 0;
 
     const CURRENCY_SYMBOLS = { usd: '$', eur: '€', gbp: '£', inr: '₹' };
+    const USD_RATES = { usd: 1.0, eur: 1.08, gbp: 1.28, inr: 0.012 };
+
+    function calculateSuggestedBid(currency) {
+      const targetUsd = highestSpotUsd > 0 ? highestSpotUsd + 1 : 3;
+      const rate = USD_RATES[currency] || 1.0;
+      const localAmount = Math.ceil(targetUsd / rate);
+      return localAmount;
+    }
+
+    function onCurrencyChange() {
+      const cur = document.getElementById('bid-currency').value;
+      document.getElementById('currency-label').textContent = CURRENCY_SYMBOLS[cur] || '$';
+      document.getElementById('bid-amount').value = calculateSuggestedBid(cur);
+    }
 
     // Auto-detect currency by browser locale
     function autoDetectCurrency() {
@@ -185,23 +209,14 @@
 
       if (locale.includes('IN')) {
         curSelect.value = 'inr';
-        document.getElementById('bid-amount').value = 400;
       } else if (locale.includes('DE') || locale.includes('FR') || locale.includes('ES') || locale.includes('IT')) {
         curSelect.value = 'eur';
-        document.getElementById('bid-amount').value = 5;
       } else if (locale.includes('GB')) {
         curSelect.value = 'gbp';
-        document.getElementById('bid-amount').value = 5;
       } else {
         curSelect.value = 'usd';
-        document.getElementById('bid-amount').value = 5;
       }
-      updateCurrencySymbol();
-    }
-
-    function updateCurrencySymbol() {
-      const cur = document.getElementById('bid-currency').value;
-      document.getElementById('currency-label').textContent = CURRENCY_SYMBOLS[cur] || '$';
+      onCurrencyChange();
     }
 
     // Fetch Standings from backend
@@ -210,9 +225,13 @@
         const res = await fetch('/api/standings');
         const data = await res.json();
         allStandings = data.standings || [];
-        highestSpot = data.topSpot || 0;
+        highestSpotUsd = data.topSpot || 0;
         
-        document.getElementById('top-spot-display').textContent = `$${highestSpot}`;
+        document.getElementById('top-spot-display').textContent = `$${highestSpotUsd.toFixed(2)}`;
+        
+        const currentCur = document.getElementById('bid-currency').value;
+        document.getElementById('bid-amount').value = calculateSuggestedBid(currentCur);
+
         renderStandings();
       } catch (err) {
         console.error('Failed to fetch standings:', err);
@@ -229,9 +248,9 @@
         if (!el) return;
 
         if (f === filter) {
-          el.className = "px-4 py-1.5 rounded-full text-xs font-semibold bg-blue-600 text-white transition shadow-sm";
+          el.className = "px-3.5 py-1.5 rounded-full text-xs font-semibold bg-blue-600 text-white transition shadow-sm";
         } else {
-          el.className = "px-4 py-1.5 rounded-full text-xs font-semibold bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition";
+          el.className = "px-3.5 py-1.5 rounded-full text-xs font-semibold bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition";
         }
       });
 
@@ -259,7 +278,6 @@
         const isPodium = idx === 0;
         const rankColor = idx === 0 ? 'text-amber-400' : idx === 1 ? 'text-slate-300' : idx === 2 ? 'text-amber-600' : 'text-slate-500';
         
-        // Extract LinkedIn username slug for avatar lookup
         let username = '';
         try {
           const match = b.linkedin_url.match(/linkedin\.com\/in\/([^\/\?#]+)/i);
@@ -303,7 +321,6 @@
           </div>
         ` : '';
 
-        // Display paid amount in paid currency + USD score
         const paidCur = (b.currency || 'usd').toLowerCase();
         const curSym = CURRENCY_SYMBOLS[paidCur] || '$';
         const displayPaid = b.original_amount ? `${curSym}${b.original_amount}` : `$${b.amount}`;
@@ -313,7 +330,6 @@
             <div class="flex items-start gap-3 sm:gap-4">
               <span class="mono text-lg font-bold ${rankColor} w-7 sm:w-8 pt-1 text-center">#${idx + 1}</span>
               
-              <!-- Profile Avatar Photo -->
               <img 
                 src="${avatarUrl}" 
                 alt="${b.name}" 
@@ -343,8 +359,14 @@
     }
 
     // Modal controls
-    function openModal() { document.getElementById('modal').classList.remove('hidden'); }
-    function closeModal() { document.getElementById('modal').classList.add('hidden'); }
+    function openModal() {
+      onCurrencyChange();
+      document.getElementById('modal').classList.remove('hidden');
+    }
+    
+    function closeModal() {
+      document.getElementById('modal').classList.add('hidden');
+    }
 
     // Checkout Form Handler
     async function handleFormSubmit(e) {
