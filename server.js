@@ -3,12 +3,11 @@ const express = require('express');
 const path = require('path');
 const sqlite3 = require('sqlite3').verbose();
 const Stripe = require('stripe');
-const { Resend } = require('resend');
+const nodemailer = require('nodemailer');
 const cron = require('node-cron');
 
 const app = express();
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
-const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 const PORT = process.env.PORT || 5001;
 
 // Exchange rates to 1 USD for fair leaderboard sorting
@@ -19,7 +18,18 @@ const USD_RATES = {
   inr: 0.012
 };
 
-// 1. Initialize SQLite Database
+// 1. Configure Nodemailer with Gmail SMTP
+const transporter = (process.env.GMAIL_USER && process.env.GMAIL_APP_PASSWORD)
+  ? nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.GMAIL_USER,
+        pass: process.env.GMAIL_APP_PASSWORD
+      }
+    })
+  : null;
+
+// 2. Initialize SQLite Database
 const db = new sqlite3.Database(path.join(__dirname, 'database.sqlite'), (err) => {
   if (err) console.error('Database connection error:', err.message);
   else console.log('Connected to SQLite database.');
@@ -73,8 +83,8 @@ db.serialize(() => {
 
 // Helper: Send Outbid Notification Email
 async function sendOutbidEmail(previousLeader, newLeaderName, newAmountUsd) {
-  if (!resend) {
-    console.log('[Notification Skipped] RESEND_API_KEY not configured.');
+  if (!transporter) {
+    console.log('[Notification Skipped] GMAIL_USER or GMAIL_APP_PASSWORD not configured.');
     return;
   }
   if (!previousLeader.email) {
@@ -85,8 +95,8 @@ async function sendOutbidEmail(previousLeader, newLeaderName, newAmountUsd) {
   const siteUrl = process.env.BASE_URL || 'https://linkedrank.onrender.com';
 
   try {
-    await resend.emails.send({
-      from: 'LinkedRank <onboarding@resend.dev>',
+    await transporter.sendMail({
+      from: `"LinkedRank" <${process.env.GMAIL_USER}>`,
       to: previousLeader.email,
       subject: `🚨 You just got outbid on LinkedRank!`,
       html: `
@@ -119,7 +129,7 @@ async function sendOutbidEmail(previousLeader, newLeaderName, newAmountUsd) {
   }
 }
 
-// 2. Automated Sunday Tournament Reset & Winner Cron (Every Sunday 23:59:59 UTC)
+// 3. Automated Sunday Tournament Reset & Winner Cron (Every Sunday 23:59:59 UTC)
 cron.schedule('59 59 23 * * 0', () => {
   console.log('[Tournament Reset] Closing weekly tournament and declaring podium winners...');
 
@@ -148,10 +158,10 @@ cron.schedule('59 59 23 * * 0', () => {
         );
 
         // Send celebration email to winner
-        if (winner.email && resend) {
+        if (winner.email && transporter) {
           const siteUrl = process.env.BASE_URL || 'https://linkedrank.onrender.com';
-          resend.emails.send({
-            from: 'LinkedRank <onboarding@resend.dev>',
+          transporter.sendMail({
+            from: `"LinkedRank" <${process.env.GMAIL_USER}>`,
             to: winner.email,
             subject: `🏆 Official Podium Finish: You Won Rank #${rank} on LinkedRank!`,
             html: `
@@ -187,7 +197,7 @@ cron.schedule('59 59 23 * * 0', () => {
   timezone: "UTC"
 });
 
-// 3. Stripe Webhook Endpoint
+// 4. Stripe Webhook Endpoint
 app.post(
   '/api/webhook',
   express.raw({ type: 'application/json' }),
@@ -255,11 +265,11 @@ app.post(
   }
 );
 
-// 4. Middlewares
+// 5. Middlewares
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// 5. API: Standings
+// 6. API: Standings
 app.get('/api/standings', (req, res) => {
   const query = `
     SELECT id, name, headline, linkedin_url, amount, original_amount, currency, badge_type, location, german_level, skills, created_at
@@ -277,7 +287,7 @@ app.get('/api/standings', (req, res) => {
   });
 });
 
-// 6. API: Checkout Session
+// 7. API: Checkout Session
 app.post('/api/checkout', async (req, res) => {
   const { 
     name, 
@@ -354,7 +364,7 @@ app.post('/api/checkout', async (req, res) => {
   );
 });
 
-// 7. API: Hall of Fame (Past Winners)
+// 8. API: Hall of Fame (Past Winners)
 app.get('/api/hall-of-fame', (req, res) => {
   db.all(
     `SELECT round_number, rank_position, name, headline, linkedin_url, amount, ended_at 
@@ -368,7 +378,70 @@ app.get('/api/hall-of-fame', (req, res) => {
   );
 });
 
-// 8. Catch-All Route
+// 9. Manual Reset Endpoint (For Testing Without Waiting for Sunday)
+app.get('/api/test-weekly-reset', (req, res) => {
+  db.all(
+    `SELECT id, name, headline, linkedin_url, email, amount 
+     FROM listings 
+     WHERE is_paid = 1 
+     ORDER BY amount DESC, created_at ASC 
+     LIMIT 3`,
+    [],
+    async (err, topWinners) => {
+      if (err || !topWinners || topWinners.length === 0) {
+        return res.json({ message: 'No paid listings found to archive.' });
+      }
+
+      const siteUrl = process.env.BASE_URL || 'https://linkedrank.onrender.com';
+
+      for (let idx = 0; idx < topWinners.length; idx++) {
+        const winner = topWinners[idx];
+        const rank = idx + 1;
+        const hofId = `hof_${Date.now()}_${rank}`;
+
+        db.run(
+          `INSERT INTO hall_of_fame (id, round_number, rank_position, name, headline, linkedin_url, email, amount)
+           VALUES (?, 1, ?, ?, ?, ?, ?, ?)`,
+          [hofId, rank, winner.name, winner.headline, winner.linkedin_url, winner.email, winner.amount]
+        );
+
+        if (winner.email && transporter) {
+          await transporter.sendMail({
+            from: `"LinkedRank" <${process.env.GMAIL_USER}>`,
+            to: winner.email,
+            subject: `🏆 Official Podium Finish: You Won Rank #${rank} on LinkedRank!`,
+            html: `
+              <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 560px; margin: 0 auto; padding: 24px; background: #0b0f19; color: #f1f5f9; border-radius: 16px;">
+                <h2 style="color: #f59e0b; margin-top: 0;">🏆 Official Podium Finish!</h2>
+                <p style="font-size: 15px; color: #cbd5e1;">Hey <strong>${winner.name}</strong>,</p>
+                <p style="font-size: 15px; color: #cbd5e1;">
+                  The weekly tournament has ended and you officially held <strong>Rank #${rank}</strong>! Your profile has been inducted into the permanent LinkedRank Hall of Fame.
+                </p>
+                <div style="background: #1e293b; padding: 18px; border-radius: 12px; margin: 24px 0; border: 1px solid #334155;">
+                  <strong style="color: #38bdf8; display: block; margin-bottom: 6px;">Share your win on LinkedIn:</strong>
+                  <p style="font-size: 13px; color: #e2e8f0; font-style: italic; line-height: 1.5;">
+                    "Finished at Rank #${rank} on LinkedRank's weekly spotlight board 🏆 Open for engineering and tech opportunities in Germany / Global Remote. Check the board: ${siteUrl}"
+                  </p>
+                </div>
+                <div style="text-align: center; margin: 24px 0;">
+                  <a href="${siteUrl}" style="background: #2563eb; color: #ffffff; text-decoration: none; padding: 10px 20px; border-radius: 8px; font-weight: bold; font-size: 13px; display: inline-block;">
+                    View Live Hall of Fame ↗
+                  </a>
+                </div>
+                <hr style="border: 0; border-top: 1px solid #1e293b; margin: 20px 0;" />
+                <p style="font-size: 11px; color: #64748b; text-align: center;">LinkedRank Spotlight &bull; Hall of Fame &bull; Sunday Reset</p>
+              </div>
+            `
+          }).catch(e => console.error(e.message));
+        }
+      }
+
+      res.json({ success: true, processedWinners: topWinners });
+    }
+  );
+});
+
+// 10. Catch-All Route
 app.get('/*splat', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
