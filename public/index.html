@@ -7,7 +7,7 @@
 
   <!-- Open Graph Meta Tags -->
   <meta property="og:title" content="LinkedRank — Weekly Spotlight Board" />
-  <meta property="og:description" content="Direct visibility for proactive engineers, students, and leaders in Germany, India, and worldwide." />
+  <meta property="og:description" content="Direct visibility for proactive engineers, students, and leaders across Germany, India, and global remote markets." />
   <meta property="og:url" content="https://linkedrank.onrender.com" />
   <meta property="og:type" content="website" />
 
@@ -48,7 +48,7 @@
   <!-- Main Content -->
   <main class="max-w-4xl w-full mx-auto px-4 py-6 sm:py-8 flex-1">
     
-    <!-- Recruiter Sighting Banner -->
+    <!-- Recruiter Check-In Banner -->
     <div id="recruiter-banner" class="hidden mb-6 p-3 rounded-xl bg-emerald-950/40 border border-emerald-800/50 flex items-center justify-between text-xs text-emerald-300">
       <div class="flex items-center gap-2">
         <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
@@ -82,7 +82,7 @@
       </div>
     </div>
 
-    <!-- LinkedIn Feeds Discovery Strip -->
+    <!-- Direct LinkedIn Feeds -->
     <div class="flex flex-wrap items-center justify-between gap-2 mb-6 bg-slate-950/60 border border-slate-800/70 rounded-xl px-3.5 py-2 text-xs">
       <span class="text-slate-400 font-medium">Direct LinkedIn Feeds:</span>
       <div class="flex items-center gap-2">
@@ -122,7 +122,7 @@
       <button onclick="changeRole('founder')" id="role-founder" class="px-3 py-1 rounded-full text-xs font-semibold bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition">Founder</button>
     </div>
 
-    <!-- Region / Location Filter Tabs -->
+    <!-- Region Filter Tabs -->
     <div class="flex flex-wrap items-center gap-2 mb-6 border-b border-slate-800/80 pb-4 text-xs">
       <span class="text-slate-500 font-medium mr-1">Region:</span>
       <button onclick="changeLocation('all')" id="loc-all" class="px-2.5 py-0.5 rounded-lg font-medium bg-slate-800 text-white transition">All Regions</button>
@@ -156,7 +156,7 @@
 
         <div>
           <label class="block text-xs font-medium text-slate-400 mb-1">Headline / Role</label>
-          <input required id="bid-headline" type="text" placeholder="e.g. Software Engineer | Working Student" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-white text-sm focus:border-blue-500 focus:outline-none" />
+          <input required id="bid-headline" type="text" placeholder="e.g. Software Engineer | Product Manager" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-white text-sm focus:border-blue-500 focus:outline-none" />
         </div>
 
         <div>
@@ -164,7 +164,6 @@
           <input required id="bid-url" type="url" placeholder="https://www.linkedin.com/in/username" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-white text-sm focus:border-blue-500 focus:outline-none" />
         </div>
 
-        <!-- Role Badge -->
         <div>
           <label class="block text-xs font-medium text-slate-400 mb-1">Status / Badge</label>
           <select id="bid-badge" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white text-xs focus:border-blue-500 focus:outline-none">
@@ -177,7 +176,7 @@
           </select>
         </div>
 
-        <!-- Target Location & German Language Level -->
+        <!-- Target Region & Languages -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <label class="block text-xs font-medium text-slate-400 mb-1">Target Region</label>
@@ -188,14 +187,25 @@
             </select>
           </div>
           <div>
-            <label class="block text-xs font-medium text-slate-400 mb-1">German Proficiency</label>
-            <select id="bid-german" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white text-xs focus:border-blue-500 focus:outline-none">
-              <option value="English Only">English Only</option>
-              <option value="A1 Beginner">A1 - Beginner</option>
-              <option value="A2 Elementary">A2 - Elementary</option>
-              <option value="B1 Intermediate">B1 - Intermediate</option>
-              <option value="B2 Professional">B2 - Professional</option>
-              <option value="C1/Native">C1 / Native</option>
+            <label class="block text-xs font-medium text-slate-400 mb-1">Languages Spoken</label>
+            <select id="bid-languages" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white text-xs focus:border-blue-500 focus:outline-none">
+              <option value="en">🇬🇧 English Only</option>
+              <optgroup label="English + German">
+                <option value="en_de_a1">🇬🇧 Eng + 🇩🇪 A1 German</option>
+                <option value="en_de_a2">🇬🇧 Eng + 🇩🇪 A2 German</option>
+                <option value="en_de_b1">🇬🇧 Eng + 🇩🇪 B1 German</option>
+                <option value="en_de_b2">🇬🇧 Eng + 🇩🇪 B2 German</option>
+                <option value="en_de_c1">🇬🇧 Eng + 🇩🇪 C1/Native</option>
+              </optgroup>
+              <optgroup label="English + European Languages">
+                <option value="en_nl">🇬🇧 Eng + 🇳🇱 Dutch</option>
+                <option value="en_fr">🇬🇧 Eng + 🇫🇷 French</option>
+                <option value="en_es">🇬🇧 Eng + 🇪🇸 Spanish</option>
+              </optgroup>
+              <optgroup label="English + Asian Languages">
+                <option value="en_hi">🇬🇧 Eng + 🇮🇳 Hindi</option>
+                <option value="en_hi_de">🇬🇧 Eng + 🇮🇳 Hin + 🇩🇪 Ger</option>
+              </optgroup>
             </select>
           </div>
         </div>
@@ -221,7 +231,7 @@
 
         <div>
           <label class="block text-xs font-medium text-slate-400 mb-1">Key Tech Skills (comma-separated)</label>
-          <input id="bid-skills" type="text" placeholder="e.g. Node.js, SAP BTP, React, Python" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-white text-sm focus:border-blue-500 focus:outline-none" />
+          <input id="bid-skills" type="text" placeholder="e.g. Node.js, React, SAP BTP, Python" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-white text-sm focus:border-blue-500 focus:outline-none" />
         </div>
 
         <button type="submit" id="submit-btn" class="w-full py-2.5 bg-blue-600 hover:bg-blue-500 font-semibold text-sm rounded-xl text-white transition shadow-lg shadow-blue-600/30 flex items-center justify-center gap-2">
@@ -267,6 +277,28 @@
 
     const CURRENCY_SYMBOLS = { usd: '$', eur: '€', gbp: '£', inr: '₹' };
     const USD_RATES = { usd: 1.0, eur: 1.08, gbp: 1.28, inr: 0.012 };
+
+    const LANG_MAP = {
+      en: '🇬🇧 English',
+      english: '🇬🇧 English',
+      'English Only': '🇬🇧 English',
+      'None': '🇬🇧 English',
+      en_de_a1: '🇬🇧 Eng + 🇩🇪 A1',
+      'A1 Beginner': '🇬🇧 Eng + 🇩🇪 A1',
+      en_de_a2: '🇬🇧 Eng + 🇩🇪 A2',
+      'A2 Elementary': '🇬🇧 Eng + 🇩🇪 A2',
+      en_de_b1: '🇬🇧 Eng + 🇩🇪 B1',
+      'B1 Intermediate': '🇬🇧 Eng + 🇩🇪 B1',
+      en_de_b2: '🇬🇧 Eng + 🇩🇪 B2',
+      'B2 Professional': '🇬🇧 Eng + 🇩🇪 B2',
+      en_de_c1: '🇬🇧 Eng + 🇩🇪 C1',
+      'C1/Native': '🇬🇧 Eng + 🇩🇪 C1',
+      en_nl: '🇬🇧 Eng + 🇳🇱 Dutch',
+      en_fr: '🇬🇧 Eng + 🇫🇷 French',
+      en_es: '🇬🇧 Eng + 🇪🇸 Spanish',
+      en_hi: '🇬🇧 Eng + 🇮🇳 Hindi',
+      en_hi_de: '🇬🇧 Eng + 🇮🇳 Hin + 🇩🇪 Ger'
+    };
 
     function calculateSuggestedBid(currency) {
       const targetUsd = highestSpotUsd > 0 ? highestSpotUsd + 1 : 3;
@@ -392,11 +424,12 @@
             badgeHtml = `<span class="text-[11px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 font-semibold">Member</span>`;
         }
 
-        // Location & German Pill
+        // Location & Dynamic Language Formatting
         const loc = b.location || 'germany';
         const locFlag = loc === 'germany' ? '🇩🇪 Germany' : loc === 'india' ? '🇮🇳 India' : '🌍 Remote';
-        const germanText = (b.german_level && b.german_level !== 'None') ? ` &bull; German: ${b.german_level}` : '';
-        const regionPill = `<span class="text-[10px] text-slate-400 bg-slate-950 border border-slate-800 px-2 py-0.5 rounded font-mono">${locFlag}${germanText}</span>`;
+        const rawLang = b.german_level || 'en';
+        const langText = LANG_MAP[rawLang] || '🇬🇧 English';
+        const regionPill = `<span class="text-[10px] text-slate-400 bg-slate-950 border border-slate-800 px-2 py-0.5 rounded font-mono">${locFlag} &bull; ${langText}</span>`;
 
         const skillsHtml = b.skills ? `
           <div class="flex flex-wrap gap-1 mt-2">
@@ -409,7 +442,6 @@
         const paidCur = (b.currency || 'usd').toLowerCase();
         const curSym = CURRENCY_SYMBOLS[paidCur] || '$';
         const displayPaid = b.original_amount ? `${curSym}${b.original_amount}` : `$${b.amount}`;
-
         const messageLink = username ? `https://www.linkedin.com/messaging/thread/new/?recipient=${username}` : b.linkedin_url;
 
         return `
@@ -497,7 +529,7 @@
         linkedin_url: document.getElementById('bid-url').value,
         badge_type: document.getElementById('bid-badge').value,
         location: document.getElementById('bid-location').value,
-        german_level: document.getElementById('bid-german').value,
+        german_level: document.getElementById('bid-languages').value,
         amount: document.getElementById('bid-amount').value,
         currency: document.getElementById('bid-currency').value,
         skills: document.getElementById('bid-skills').value
