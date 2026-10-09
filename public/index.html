@@ -5,18 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LinkedRank — Weekly Spotlight Board</title>
 
-  <!-- Open Graph Meta Tags for Social Sharing -->
+  <!-- Open Graph Meta Tags -->
   <meta property="og:title" content="LinkedRank — Weekly Spotlight Board" />
-  <meta property="og:description" content="A live visibility board connecting proactive engineers, students, and leaders directly with hiring teams." />
+  <meta property="og:description" content="Direct visibility for proactive engineers, students, and leaders in Germany, India, and worldwide." />
   <meta property="og:url" content="https://linkedrank.onrender.com" />
   <meta property="og:type" content="website" />
-  <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="LinkedRank — Weekly Spotlight Board" />
-  <meta name="twitter:description" content="A live visibility board connecting proactive engineers, students, and leaders directly with hiring teams." />
 
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
   <style>
     body { font-family: 'Inter', sans-serif; }
@@ -25,7 +22,7 @@
 </head>
 <body class="bg-[#0b0f19] text-slate-100 min-h-screen flex flex-col justify-between selection:bg-blue-600 selection:text-white">
 
-  <!-- Navigation -->
+  <!-- Header -->
   <header class="border-b border-slate-800/80 bg-[#0b0f19]/80 backdrop-blur sticky top-0 z-40">
     <div class="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
       <div class="flex items-center gap-3">
@@ -38,8 +35,8 @@
         </div>
       </div>
       <div class="flex items-center gap-2">
-        <button onclick="openRecruiterModal()" class="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 font-semibold text-xs rounded-xl transition flex items-center gap-1.5">
-          <span>Hiring? Check In</span>
+        <button onclick="openRecruiterModal()" class="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 font-semibold text-xs rounded-xl transition">
+          Hiring? Check In
         </button>
         <button onclick="openModal()" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm rounded-xl transition shadow-lg shadow-blue-600/20 active:scale-95 flex items-center gap-1.5">
           Claim Rank <span class="text-xs">↗</span>
@@ -48,11 +45,11 @@
     </div>
   </header>
 
-  <!-- Main Body -->
+  <!-- Main Content -->
   <main class="max-w-4xl w-full mx-auto px-4 py-6 sm:py-8 flex-1">
     
-    <!-- Recruiter Sighting Banner (Social Proof) -->
-    <div id="recruiter-banner" class="hidden mb-6 p-3 rounded-xl bg-emerald-950/40 border border-emerald-800/50 flex items-center justify-between text-xs text-emerald-300 transition">
+    <!-- Recruiter Sighting Banner -->
+    <div id="recruiter-banner" class="hidden mb-6 p-3 rounded-xl bg-emerald-950/40 border border-emerald-800/50 flex items-center justify-between text-xs text-emerald-300">
       <div class="flex items-center gap-2">
         <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
         <span id="recruiter-text">Recent recruiter check-in recorded</span>
@@ -76,7 +73,6 @@
           </p>
         </div>
 
-        <!-- Live Countdown Widget -->
         <div class="bg-slate-950/70 border border-slate-800 rounded-xl p-4 text-center min-w-[210px] shadow-inner">
           <span class="text-[11px] uppercase tracking-wider text-slate-400 font-bold block mb-1">Round Closes In</span>
           <div id="countdown" class="mono text-2xl font-black text-amber-400">
@@ -86,7 +82,7 @@
       </div>
     </div>
 
-    <!-- Live LinkedIn Feeds Shortcut Strip -->
+    <!-- LinkedIn Feeds Discovery Strip -->
     <div class="flex flex-wrap items-center justify-between gap-2 mb-6 bg-slate-950/60 border border-slate-800/70 rounded-xl px-3.5 py-2 text-xs">
       <span class="text-slate-400 font-medium">Direct LinkedIn Feeds:</span>
       <div class="flex items-center gap-2">
@@ -107,7 +103,7 @@
       </div>
     </div>
 
-    <!-- Standings Header -->
+    <!-- Standings Title -->
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-3">
       <h2 class="text-xl font-bold text-white tracking-tight">Current Standings</h2>
       <div class="text-xs text-slate-400 mono">
@@ -115,29 +111,24 @@
       </div>
     </div>
 
-    <!-- Role Filter Buttons (Deep linked via URL Hash) -->
-    <div class="flex flex-wrap items-center gap-2 mb-6 border-b border-slate-800/80 pb-4">
-      <button onclick="changeTab('all')" id="filter-all" class="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-blue-600 text-white transition shadow-sm">
-        All Leaders
-      </button>
-      <button onclick="changeTab('open_to_work')" id="filter-open_to_work" class="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition">
-        Open to Work
-      </button>
-      <button onclick="changeTab('student_working')" id="filter-student_working" class="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition">
-        Student / Working
-      </button>
-      <button onclick="changeTab('tech')" id="filter-tech" class="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition">
-        Engineering & Tech
-      </button>
-      <button onclick="changeTab('manager')" id="filter-manager" class="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition">
-        Leader / Manager
-      </button>
-      <button onclick="changeTab('creator')" id="filter-creator" class="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition">
-        Creator / Builder
-      </button>
-      <button onclick="changeTab('founder')" id="filter-founder" class="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition">
-        Founder
-      </button>
+    <!-- Role Filter Tabs -->
+    <div class="flex flex-wrap items-center gap-2 mb-3">
+      <button onclick="changeRole('all')" id="role-all" class="px-3 py-1 rounded-full text-xs font-semibold bg-blue-600 text-white transition">All Roles</button>
+      <button onclick="changeRole('open_to_work')" id="role-open_to_work" class="px-3 py-1 rounded-full text-xs font-semibold bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition">Open to Work</button>
+      <button onclick="changeRole('student_working')" id="role-student_working" class="px-3 py-1 rounded-full text-xs font-semibold bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition">Student / Working</button>
+      <button onclick="changeRole('tech')" id="role-tech" class="px-3 py-1 rounded-full text-xs font-semibold bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition">Engineering & Tech</button>
+      <button onclick="changeRole('manager')" id="role-manager" class="px-3 py-1 rounded-full text-xs font-semibold bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition">Leader / Manager</button>
+      <button onclick="changeRole('creator')" id="role-creator" class="px-3 py-1 rounded-full text-xs font-semibold bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition">Creator / Builder</button>
+      <button onclick="changeRole('founder')" id="role-founder" class="px-3 py-1 rounded-full text-xs font-semibold bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition">Founder</button>
+    </div>
+
+    <!-- Region / Location Filter Tabs -->
+    <div class="flex flex-wrap items-center gap-2 mb-6 border-b border-slate-800/80 pb-4 text-xs">
+      <span class="text-slate-500 font-medium mr-1">Region:</span>
+      <button onclick="changeLocation('all')" id="loc-all" class="px-2.5 py-0.5 rounded-lg font-medium bg-slate-800 text-white transition">All Regions</button>
+      <button onclick="changeLocation('germany')" id="loc-germany" class="px-2.5 py-0.5 rounded-lg font-medium bg-slate-950 border border-slate-800 text-slate-400 hover:text-white transition">🇩🇪 Germany Focus</button>
+      <button onclick="changeLocation('india')" id="loc-india" class="px-2.5 py-0.5 rounded-lg font-medium bg-slate-950 border border-slate-800 text-slate-400 hover:text-white transition">🇮🇳 India Focus</button>
+      <button onclick="changeLocation('remote')" id="loc-remote" class="px-2.5 py-0.5 rounded-lg font-medium bg-slate-950 border border-slate-800 text-slate-400 hover:text-white transition">🌍 Global Remote</button>
     </div>
 
     <!-- Standings List -->
@@ -149,15 +140,15 @@
     LinkedRank &bull; Built with Node.js, SQLite, Stripe & Render &bull; Resets every Sunday 00:00 UTC
   </footer>
 
-  <!-- Claim Rank Modal -->
+  <!-- Claim Modal -->
   <div id="modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl relative">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
       <button onclick="closeModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-xl">&times;</button>
       
       <h3 class="text-lg font-bold text-white mb-1">Claim Your Rank</h3>
       <p class="text-xs text-slate-400 mb-5">Beat the highest bid to claim #1 instantly.</p>
 
-      <form id="bid-form" onsubmit="handleFormSubmit(event)" class="space-y-4">
+      <form id="bid-form" onsubmit="handleFormSubmit(event)" class="space-y-3.5">
         <div>
           <label class="block text-xs font-medium text-slate-400 mb-1">Full Name</label>
           <input required id="bid-name" type="text" placeholder="Full Name" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-white text-sm focus:border-blue-500 focus:outline-none" />
@@ -165,7 +156,7 @@
 
         <div>
           <label class="block text-xs font-medium text-slate-400 mb-1">Headline / Role</label>
-          <input required id="bid-headline" type="text" placeholder="e.g. Software Engineer | Product Manager" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-white text-sm focus:border-blue-500 focus:outline-none" />
+          <input required id="bid-headline" type="text" placeholder="e.g. Software Engineer | Working Student" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-white text-sm focus:border-blue-500 focus:outline-none" />
         </div>
 
         <div>
@@ -173,6 +164,7 @@
           <input required id="bid-url" type="url" placeholder="https://www.linkedin.com/in/username" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-white text-sm focus:border-blue-500 focus:outline-none" />
         </div>
 
+        <!-- Role Badge -->
         <div>
           <label class="block text-xs font-medium text-slate-400 mb-1">Status / Badge</label>
           <select id="bid-badge" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white text-xs focus:border-blue-500 focus:outline-none">
@@ -185,19 +177,43 @@
           </select>
         </div>
 
+        <!-- Target Location & German Language Level -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-medium text-slate-400 mb-1">Target Region</label>
+            <select id="bid-location" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white text-xs focus:border-blue-500 focus:outline-none">
+              <option value="germany">🇩🇪 Germany (Local/Relo)</option>
+              <option value="india">🇮🇳 India</option>
+              <option value="remote">🌍 Global Remote</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-400 mb-1">German Proficiency</label>
+            <select id="bid-german" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white text-xs focus:border-blue-500 focus:outline-none">
+              <option value="English Only">English Only</option>
+              <option value="A1 Beginner">A1 - Beginner</option>
+              <option value="A2 Elementary">A2 - Elementary</option>
+              <option value="B1 Intermediate">B1 - Intermediate</option>
+              <option value="B2 Professional">B2 - Professional</option>
+              <option value="C1/Native">C1 / Native</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Currency & Bid Amount -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <label class="block text-xs font-medium text-slate-400 mb-1">Currency</label>
             <select id="bid-currency" onchange="onCurrencyChange()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white text-xs focus:border-blue-500 focus:outline-none">
-              <option value="usd">USD ($)</option>
               <option value="eur">EUR (€)</option>
+              <option value="usd">USD ($)</option>
               <option value="gbp">GBP (£)</option>
               <option value="inr">INR (₹)</option>
             </select>
           </div>
           <div>
             <label class="block text-xs font-medium text-slate-400 mb-1">
-              Bid Amount (<span id="currency-label">$</span>)
+              Bid Amount (<span id="currency-label">€</span>)
             </label>
             <input required id="bid-amount" type="number" min="1" step="any" value="5" class="mono w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-white text-sm font-bold focus:border-blue-500 focus:outline-none" />
           </div>
@@ -205,7 +221,7 @@
 
         <div>
           <label class="block text-xs font-medium text-slate-400 mb-1">Key Tech Skills (comma-separated)</label>
-          <input id="bid-skills" type="text" placeholder="e.g. Node.js, Express, Stripe, Python" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-white text-sm focus:border-blue-500 focus:outline-none" />
+          <input id="bid-skills" type="text" placeholder="e.g. Node.js, SAP BTP, React, Python" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-white text-sm focus:border-blue-500 focus:outline-none" />
         </div>
 
         <button type="submit" id="submit-btn" class="w-full py-2.5 bg-blue-600 hover:bg-blue-500 font-semibold text-sm rounded-xl text-white transition shadow-lg shadow-blue-600/30 flex items-center justify-center gap-2">
@@ -215,7 +231,7 @@
     </div>
   </div>
 
-  <!-- Recruiter Check-In Modal -->
+  <!-- Recruiter Modal -->
   <div id="recruiter-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
     <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-sm w-full p-6 shadow-2xl relative">
       <button onclick="closeRecruiterModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-xl">&times;</button>
@@ -223,7 +239,7 @@
       <h3 class="text-lg font-bold text-white mb-1">Recruiter Check-In</h3>
       <p class="text-xs text-slate-400 mb-4">Let candidates know active hiring managers are reviewing this board.</p>
 
-      <form id="recruiter-form" onsubmit="handleRecruiterSubmit(event)" class="space-y-3">
+      <form onsubmit="handleRecruiterSubmit(event)" class="space-y-3">
         <div>
           <label class="block text-xs font-medium text-slate-400 mb-1">Your Name</label>
           <input required id="rec-name" type="text" placeholder="e.g. Jonas Müller" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white text-xs focus:border-blue-500 focus:outline-none" />
@@ -233,10 +249,10 @@
           <input required id="rec-company" type="text" placeholder="e.g. N26 / Zalando" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white text-xs focus:border-blue-500 focus:outline-none" />
         </div>
         <div>
-          <label class="block text-xs font-medium text-slate-400 mb-1">Roles You Are Scouting</label>
+          <label class="block text-xs font-medium text-slate-400 mb-1">Role You Are Scouting</label>
           <input required id="rec-role" type="text" placeholder="e.g. Working Student, Full-Stack" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white text-xs focus:border-blue-500 focus:outline-none" />
         </div>
-        <button type="submit" class="w-full py-2 bg-emerald-600 hover:bg-emerald-500 font-semibold text-xs rounded-xl text-white transition shadow-lg shadow-emerald-600/30">
+        <button type="submit" class="w-full py-2 bg-emerald-600 hover:bg-emerald-500 font-semibold text-xs rounded-xl text-white transition">
           Check In to Board
         </button>
       </form>
@@ -245,7 +261,8 @@
 
   <script>
     let allStandings = [];
-    let currentFilter = 'all';
+    let currentRole = 'all';
+    let currentLocation = 'all';
     let highestSpotUsd = 0;
 
     const CURRENCY_SYMBOLS = { usd: '$', eur: '€', gbp: '£', inr: '₹' };
@@ -263,20 +280,16 @@
       document.getElementById('bid-amount').value = calculateSuggestedBid(cur);
     }
 
-    // Auto-detect currency by browser locale
     function autoDetectCurrency() {
       const locale = navigator.language || navigator.languages?.[0] || 'en-US';
       const curSelect = document.getElementById('bid-currency');
-
       if (locale.includes('IN')) curSelect.value = 'inr';
       else if (locale.includes('DE') || locale.includes('FR') || locale.includes('ES') || locale.includes('IT')) curSelect.value = 'eur';
       else if (locale.includes('GB')) curSelect.value = 'gbp';
       else curSelect.value = 'usd';
-
       onCurrencyChange();
     }
 
-    // Fetch Standings
     async function fetchStandings() {
       try {
         const res = await fetch('/api/standings');
@@ -285,7 +298,6 @@
         highestSpotUsd = data.topSpot || 0;
         
         document.getElementById('top-spot-display').textContent = `$${highestSpotUsd.toFixed(2)}`;
-        
         const currentCur = document.getElementById('bid-currency').value;
         document.getElementById('bid-amount').value = calculateSuggestedBid(currentCur);
 
@@ -295,31 +307,45 @@
       }
     }
 
-    // Tab Change with URL Hash synchronization
-    function changeTab(filter) {
-      currentFilter = filter;
-      window.location.hash = filter === 'all' ? '' : filter;
-      applyTabStyle();
+    function changeRole(role) {
+      currentRole = role;
+      applyTabStyles();
       renderStandings();
     }
 
-    function applyTabStyle() {
-      const filters = ['all', 'open_to_work', 'student_working', 'tech', 'manager', 'creator', 'founder'];
-      filters.forEach(f => {
-        const el = document.getElementById(`filter-${f}`);
+    function changeLocation(loc) {
+      currentLocation = loc;
+      applyTabStyles();
+      renderStandings();
+    }
+
+    function applyTabStyles() {
+      const roles = ['all', 'open_to_work', 'student_working', 'tech', 'manager', 'creator', 'founder'];
+      roles.forEach(r => {
+        const el = document.getElementById(`role-${r}`);
         if (!el) return;
-        if (f === currentFilter) {
-          el.className = "px-3.5 py-1.5 rounded-full text-xs font-semibold bg-blue-600 text-white transition shadow-sm";
-        } else {
-          el.className = "px-3.5 py-1.5 rounded-full text-xs font-semibold bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition";
-        }
+        el.className = (r === currentRole) 
+          ? "px-3 py-1 rounded-full text-xs font-semibold bg-blue-600 text-white transition"
+          : "px-3 py-1 rounded-full text-xs font-semibold bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition";
+      });
+
+      const locs = ['all', 'germany', 'india', 'remote'];
+      locs.forEach(l => {
+        const el = document.getElementById(`loc-${l}`);
+        if (!el) return;
+        el.className = (l === currentLocation)
+          ? "px-2.5 py-0.5 rounded-lg font-medium bg-slate-800 text-white transition"
+          : "px-2.5 py-0.5 rounded-lg font-medium bg-slate-950 border border-slate-800 text-slate-400 hover:text-white transition";
       });
     }
 
-    // Render Standings
     function renderStandings() {
       const container = document.getElementById('standings');
-      const filtered = allStandings.filter(b => currentFilter === 'all' || b.badge_type === currentFilter);
+      const filtered = allStandings.filter(b => {
+        const matchRole = currentRole === 'all' || b.badge_type === currentRole;
+        const matchLoc = currentLocation === 'all' || (b.location || 'germany') === currentLocation;
+        return matchRole && matchLoc;
+      });
 
       if (!filtered.length) {
         container.innerHTML = `
@@ -337,7 +363,6 @@
         const isPodium = idx === 0;
         const rankColor = idx === 0 ? 'text-amber-400' : idx === 1 ? 'text-slate-300' : idx === 2 ? 'text-amber-600' : 'text-slate-500';
         
-        // Extract LinkedIn username slug for avatars and 1-click messaging
         let username = '';
         try {
           const match = b.linkedin_url.match(/linkedin\.com\/in\/([^\/\?#]+)/i);
@@ -363,15 +388,15 @@
           case 'manager':
             badgeHtml = `<span class="text-[11px] px-2 py-0.5 rounded-full bg-indigo-950/80 text-indigo-300 border border-indigo-800/60 font-semibold">Leader / Manager</span>`;
             break;
-          case 'creator':
-            badgeHtml = `<span class="text-[11px] px-2 py-0.5 rounded-full bg-amber-950/80 text-amber-300 border border-amber-800/60 font-semibold">Creator / Builder</span>`;
-            break;
-          case 'founder':
-            badgeHtml = `<span class="text-[11px] px-2 py-0.5 rounded-full bg-purple-950/80 text-purple-300 border border-purple-800/60 font-semibold">Founder</span>`;
-            break;
           default:
             badgeHtml = `<span class="text-[11px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 font-semibold">Member</span>`;
         }
+
+        // Location & German Pill
+        const loc = b.location || 'germany';
+        const locFlag = loc === 'germany' ? '🇩🇪 Germany' : loc === 'india' ? '🇮🇳 India' : '🌍 Remote';
+        const germanText = (b.german_level && b.german_level !== 'None') ? ` &bull; German: ${b.german_level}` : '';
+        const regionPill = `<span class="text-[10px] text-slate-400 bg-slate-950 border border-slate-800 px-2 py-0.5 rounded font-mono">${locFlag}${germanText}</span>`;
 
         const skillsHtml = b.skills ? `
           <div class="flex flex-wrap gap-1 mt-2">
@@ -385,10 +410,7 @@
         const curSym = CURRENCY_SYMBOLS[paidCur] || '$';
         const displayPaid = b.original_amount ? `${curSym}${b.original_amount}` : `$${b.amount}`;
 
-        // Direct connect messaging link
-        const messageLink = username 
-          ? `https://www.linkedin.com/messaging/thread/new/?recipient=${username}`
-          : b.linkedin_url;
+        const messageLink = username ? `https://www.linkedin.com/messaging/thread/new/?recipient=${username}` : b.linkedin_url;
 
         return `
           <div class="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-slate-900/60 hover:bg-slate-900/90 border ${isPodium ? 'border-amber-500/40' : 'border-slate-800'} rounded-2xl transition gap-3">
@@ -408,11 +430,11 @@
                     ${b.name} <span class="text-xs text-slate-500">↗</span>
                   </a>
                   ${badgeHtml}
+                  ${regionPill}
                 </div>
                 <p class="text-xs text-slate-400 mt-0.5 font-medium">${b.headline}</p>
                 ${skillsHtml}
                 
-                <!-- Direct Connect Actions -->
                 <div class="flex items-center gap-2 mt-2.5">
                   <a href="${b.linkedin_url}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-[11px] font-semibold text-slate-300 transition">
                     View Profile ↗
@@ -433,7 +455,6 @@
       }).join('');
     }
 
-    // Modal Controls
     function openModal() {
       onCurrencyChange();
       document.getElementById('modal').classList.remove('hidden');
@@ -449,7 +470,6 @@
       document.getElementById('recruiter-modal').classList.add('hidden');
     }
 
-    // Recruiter Check-In Handler
     function handleRecruiterSubmit(e) {
       e.preventDefault();
       const name = document.getElementById('rec-name').value;
@@ -462,10 +482,9 @@
       banner.classList.remove('hidden');
 
       closeRecruiterModal();
-      alert('Thank you for checking in! Candidates can now see that active scouts are checking the board.');
+      alert('Thank you! Candidates can now see that active scouts are checking the board.');
     }
 
-    // Checkout Form Handler
     async function handleFormSubmit(e) {
       e.preventDefault();
       const btn = document.getElementById('submit-btn');
@@ -477,6 +496,8 @@
         headline: document.getElementById('bid-headline').value,
         linkedin_url: document.getElementById('bid-url').value,
         badge_type: document.getElementById('bid-badge').value,
+        location: document.getElementById('bid-location').value,
+        german_level: document.getElementById('bid-german').value,
         amount: document.getElementById('bid-amount').value,
         currency: document.getElementById('bid-currency').value,
         skills: document.getElementById('bid-skills').value
@@ -504,7 +525,6 @@
       }
     }
 
-    // Weekly Countdown Timer (Sundays 23:59:59 UTC)
     function updateCountdown() {
       const now = new Date();
       const day = now.getUTCDay();
@@ -531,7 +551,6 @@
       document.getElementById('countdown').textContent = `${d}d ${h}h ${m}m ${s}s`;
     }
 
-    // Return URL handling from Stripe
     function handlePaymentReturn() {
       const params = new URLSearchParams(window.location.search);
       if (params.get('payment') === 'success') {
@@ -542,25 +561,9 @@
       }
     }
 
-    // Synchronize initial URL hash (e.g. #open_to_work)
-    function handleUrlHash() {
-      const hash = window.location.hash.replace('#', '');
-      const valid = ['open_to_work', 'student_working', 'tech', 'manager', 'creator', 'founder'];
-      if (valid.includes(hash)) {
-        currentFilter = hash;
-        applyTabStyle();
-      }
-    }
-
-    window.addEventListener('hashchange', () => {
-      handleUrlHash();
-      renderStandings();
-    });
-
     setInterval(updateCountdown, 1000);
     updateCountdown();
     handlePaymentReturn();
-    handleUrlHash();
     autoDetectCurrency();
     fetchStandings();
   </script>

@@ -11,9 +11,9 @@ const PORT = process.env.PORT || 5001;
 // Exchange rates to 1 USD for fair leaderboard sorting
 const USD_RATES = {
   usd: 1.0,
-  eur: 1.08,    // 1 EUR ≈ 1.08 USD
-  gbp: 1.28,    // 1 GBP ≈ 1.28 USD
-  inr: 0.012    // 1 INR ≈ 0.012 USD (1 USD ≈ 83 INR)
+  eur: 1.08,
+  gbp: 1.28,
+  inr: 0.012
 };
 
 // 1. Initialize SQLite Database
@@ -33,6 +33,8 @@ db.serialize(() => {
       original_amount REAL,
       currency TEXT DEFAULT 'usd',
       badge_type TEXT DEFAULT 'open_to_work',
+      location TEXT DEFAULT 'germany',
+      german_level TEXT DEFAULT 'None',
       skills TEXT DEFAULT '',
       is_paid INTEGER DEFAULT 0,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP
@@ -44,9 +46,11 @@ db.serialize(() => {
   db.run(`ALTER TABLE listings ADD COLUMN skills TEXT DEFAULT ''`, () => {});
   db.run(`ALTER TABLE listings ADD COLUMN original_amount REAL`, () => {});
   db.run(`ALTER TABLE listings ADD COLUMN currency TEXT DEFAULT 'usd'`, () => {});
+  db.run(`ALTER TABLE listings ADD COLUMN location TEXT DEFAULT 'germany'`, () => {});
+  db.run(`ALTER TABLE listings ADD COLUMN german_level TEXT DEFAULT 'None'`, () => {});
 });
 
-// 2. Stripe Webhook Endpoint (Raw body for signature verification)
+// 2. Stripe Webhook Endpoint
 app.post(
   '/api/webhook',
   express.raw({ type: 'application/json' }),
@@ -55,7 +59,7 @@ app.post(
     const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
     if (!webhookSecret) {
-      console.error('Webhook signature verification failed: No webhook secret provided.');
+      console.error('Webhook secret is not configured.');
       return res.status(400).send('Webhook secret is not configured.');
     }
 
@@ -97,10 +101,10 @@ app.post(
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// 4. API: Standings (Ordered by normalized USD amount)
+// 4. API: Standings
 app.get('/api/standings', (req, res) => {
   const query = `
-    SELECT id, name, headline, linkedin_url, amount, original_amount, currency, badge_type, skills, created_at
+    SELECT id, name, headline, linkedin_url, amount, original_amount, currency, badge_type, location, german_level, skills, created_at
     FROM listings
     WHERE is_paid = 1
     ORDER BY amount DESC, created_at ASC
@@ -115,9 +119,19 @@ app.get('/api/standings', (req, res) => {
   });
 });
 
-// 5. API: Checkout Session (Stripe Dynamic Payment Methods)
+// 5. API: Checkout Session
 app.post('/api/checkout', async (req, res) => {
-  const { name, headline, linkedin_url, amount, currency = 'usd', badge_type, skills } = req.body;
+  const { 
+    name, 
+    headline, 
+    linkedin_url, 
+    amount, 
+    currency = 'usd', 
+    badge_type, 
+    location = 'germany', 
+    german_level = 'None', 
+    skills 
+  } = req.body;
 
   if (!name || !headline || !linkedin_url || !amount) {
     return res.status(400).json({ error: 'Missing required fields' });
@@ -126,16 +140,14 @@ app.post('/api/checkout', async (req, res) => {
   const selectedCurrency = currency.toLowerCase();
   const rate = USD_RATES[selectedCurrency] || 1.0;
   const rawAmount = Math.max(1, parseFloat(amount));
-
-  // Normalized USD amount stored for fair rank positioning
   const normalizedUsd = Math.round(rawAmount * rate * 100) / 100;
 
   const bidId = `bid_${Date.now()}`;
   const baseUrl = process.env.BASE_URL || `http://localhost:${PORT}`;
 
   db.run(
-    `INSERT INTO listings (id, name, headline, linkedin_url, amount, original_amount, currency, badge_type, skills, is_paid)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 0)`,
+    `INSERT INTO listings (id, name, headline, linkedin_url, amount, original_amount, currency, badge_type, location, german_level, skills, is_paid)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)`,
     [
       bidId,
       name.trim(),
@@ -145,6 +157,8 @@ app.post('/api/checkout', async (req, res) => {
       rawAmount,
       selectedCurrency,
       badge_type || 'open_to_work',
+      location,
+      german_level,
       (skills || '').trim(),
     ],
     async (err) => {
@@ -160,7 +174,7 @@ app.post('/api/checkout', async (req, res) => {
                 currency: selectedCurrency,
                 product_data: {
                   name: `LinkedRank Spotlight: ${name}`,
-                  description: `${headline} [${badge_type}]`,
+                  description: `${headline} [${location.toUpperCase()}]`,
                 },
                 unit_amount: Math.round(rawAmount * 100),
               },
@@ -182,7 +196,7 @@ app.post('/api/checkout', async (req, res) => {
   );
 });
 
-// 6. Catch-All Route (Express 5 syntax)
+// 6. Express 5 Catch-All Route
 app.get('/*splat', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
